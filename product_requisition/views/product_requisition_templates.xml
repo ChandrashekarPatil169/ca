@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ── Portal home card ─────────────────────────────────────────────────── -->
+    <template id="portal_my_home_product_requisition"
+              name="Product Requisition Portal Entry"
+              inherit_id="portal.portal_my_home"
+              priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-set="_product_requisition_enabled"
+               t-value="request.env['ir.config_parameter'].sudo().get_param('product_requisition.module_enabled', 'True') not in ('False', 'false', '0', 'no', 'off')"/>
+            <t t-if="_product_requisition_enabled">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/sale/static/src/img/bag.svg'"/>
+                <t t-set="title">Product Requisition</t>
+                <t t-set="text">Request products and create a quotation opportunity</t>
+                <t t-set="url" t-value="'/my/product-requisition'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/sale/static/src/img/bag.svg'"/>
+                <t t-set="title">Product Requisition History</t>
+                <t t-set="text">View submitted requisitions and requested products</t>
+                <t t-set="url" t-value="'/my/product-requisition/history'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+            </t>
+        </div>
+    </template>
+
+    <record id="website_menu_product_requisition" model="website.menu">
+        <field name="name">Product Requisition</field>
+        <field name="url">/product-requisition</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">45</field>
+    </record>
+
+    <template id="product_requisition_home_chatbot"
+              inherit_id="website.layout"
+              name="Product Requisition Home Chatbot">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <t t-set="_product_requisition_enabled"
+               t-value="request.env['ir.config_parameter'].sudo().get_param('product_requisition.module_enabled', 'True') not in ('False', 'false', '0', 'no', 'off')"/>
+            <t t-set="_product_requisition_partner"
+               t-value="False if request.env.user._is_public() else request.env.user.partner_id"/>
+            <form t-if="request.httprequest.path == '/' and _product_requisition_enabled"
+                  action="/product-requisition/submit"
+                  method="post"
+                  class="o_product_requisition_form o_product_requisition_home_chatbot_form"
+                  t-att-data-otp-verified="'1' if _product_requisition_partner else '0'"
+                  t-att-data-otp-required="'0' if _product_requisition_partner else '1'">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="otp_token" class="o_req_otp_token"/>
+                <input type="hidden" name="lead_name"/>
+                <input type="hidden" name="email_cc"/>
+                <input type="hidden" name="phone"/>
+                <input type="hidden" name="company_name"/>
+                <input type="hidden" name="job_position"/>
+                <input type="hidden" name="website"/>
+                <input type="hidden" name="street"/>
+                <input type="hidden" name="street2"/>
+                <input type="hidden" name="city"/>
+                <input type="hidden" name="zip"/>
+                <input type="hidden" name="country_id"/>
+                <input type="hidden" name="state_id"/>
+                <input type="hidden" name="priority" value="0"/>
+                <input type="hidden" name="notes"/>
+
+                <div class="d-none">
+                    <input id="customer_name" name="customer_name" type="text"
+                           t-att-value="(_product_requisition_partner and _product_requisition_partner.name) or ''"/>
+                    <input id="email" name="email" type="email" class="o_req_email"
+                           t-att-value="(_product_requisition_partner and _product_requisition_partner.email) or ''"/>
+                    <input id="employee_code" name="employee_code" type="text" class="o_req_code"
+                           t-att-value="(_product_requisition_partner and (_product_requisition_partner.ref or _product_requisition_partner.id)) or ''"/>
+                    <input name="otp" type="text" class="o_req_otp"/>
+                    <div class="o_req_otp_status"/>
+                    <div class="o_otp_verify_area"/>
+
+                    <div class="o_product_requisition_line">
+                        <select name="product_category" class="o_req_product_category">
+                            <option value="goods">Goods</option>
+                            <option value="service">Service</option>
+                        </select>
+                        <select name="asset_category_id" class="o_req_asset_category">
+                            <option value="">Select asset</option>
+                        </select>
+                        <input name="product_id" type="hidden" class="o_req_product_id"/>
+                        <input name="product_name" type="text" class="o_req_product_select"/>
+                        <select class="o_req_product_dropdown">
+                            <option value="">Select product</option>
+                        </select>
+                        <input name="quantity" type="number" min="1" step="1" value="1" class="o_req_quantity"/>
+                        <input name="uom" type="text" class="o_req_uom"/>
+                        <input name="lead_time" type="number" min="0" step="1"/>
+                        <input name="budget" type="number" min="0" step="0.01"/>
+                        <input name="expected_date" type="date"/>
+                        <input name="description" type="text"/>
+                    </div>
+                    <button type="submit" class="o_submit_requisition">Submit Requisition</button>
+                </div>
+
+                <button type="button"
+                        class="o_requisition_chatbot_launcher"
+                        title="Open requisition assistant"
+                        aria-label="Open requisition assistant">
+                    <i class="fa fa-comments-o"/>
+                </button>
+                <div class="o_requisition_chatbot" aria-live="polite">
+                    <div class="o_requisition_chatbot_header">
+                        <span class="d-flex align-items-center gap-2">
+                            <i class="fa fa-comments-o"/>
+                            <span>Requisition Assistant</span>
+                        </span>
+                        <button type="button"
+                                class="o_requisition_chatbot_close"
+                                title="Minimize"
+                                aria-label="Minimize requisition assistant">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </div>
+                    <div class="o_requisition_chatbot_messages"/>
+                    <div class="o_requisition_chatbot_entry">
+                        <input type="text"
+                               class="form-control o_requisition_chatbot_input"
+                               autocomplete="off"/>
+                        <button type="button" class="btn btn-primary o_requisition_chatbot_send">
+                            <i class="fa fa-paper-plane"/>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </xpath>
+    </template>
+
+    <!-- ── Breadcrumb ────────────────────────────────────────────────────── -->
+    <template id="product_requisition_breadcrumbs"
+              inherit_id="portal.portal_breadcrumbs"
+              name="Product Requisition Breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'product_requisition'" class="breadcrumb-item active">
+                Product Requisition
+            </li>
+            <li t-if="page_name == 'product_requisition_history'" class="breadcrumb-item active">
+                Product Requisition History
+            </li>
+        </xpath>
+    </template>
+
+    <!-- ── Main form ─────────────────────────────────────────────────────── -->
+    <template id="product_requisition_form" name="Product Requisition">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container py-4">
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Product Requisition</li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="h2 mb-3">Product Requisition</h1>
+
+                    <!-- Validation error banner -->
+                    <div t-if="error" class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+                        <i class="fa fa-exclamation-circle fa-lg"/>
+                        <span t-out="error"/>
+                    </div>
+                    <div t-if="success" class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+                        <i class="fa fa-check-circle fa-lg"/>
+                        <span t-out="success"/>
+                    </div>
+
+                        <form action="/product-requisition/submit" method="post"
+                              class="o_product_requisition_form"
+                              t-att-data-otp-verified="'1' if otp_verified else '0'"
+                              t-att-data-otp-required="'1' if otp_required else '0'">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="otp_token" class="o_req_otp_token"
+                                   t-att-value="form_values.get('otp_token') or ''"/>
+                            <t t-if="not otp_required">
+                                <input type="hidden" id="customer_name" name="customer_name"
+                                       t-att-value="form_values.get('customer_name') or (partner and partner.name) or ''"/>
+                                <input type="hidden" id="email" name="email" class="o_req_email"
+                                       t-att-value="form_values.get('email') or (partner and partner.email) or ''"/>
+                                <input type="hidden" id="employee_code" name="employee_code" class="o_req_code"
+                                       t-att-value="form_values.get('employee_code') or (partner and (partner.ref or partner.id)) or ''"/>
+                            </t>
+
+                    <button type="button"
+                            class="o_requisition_chatbot_launcher"
+                            title="Open requisition assistant"
+                            aria-label="Open requisition assistant">
+                        <i class="fa fa-comments-o"/>
+                    </button>
+                    <div class="o_requisition_chatbot mb-4" aria-live="polite">
+                        <div class="o_requisition_chatbot_header">
+                            <span class="d-flex align-items-center gap-2">
+                                <i class="fa fa-comments-o"/>
+                                <span>Requisition Assistant</span>
+                            </span>
+                            <button type="button"
+                                    class="o_requisition_chatbot_close"
+                                    title="Minimize"
+                                    aria-label="Minimize requisition assistant">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                        <div class="o_requisition_chatbot_messages"/>
+                        <div class="o_requisition_chatbot_entry">
+                            <input type="text"
+                                   class="form-control o_requisition_chatbot_input"
+                                   autocomplete="off"/>
+                            <button type="button" class="btn btn-primary o_requisition_chatbot_send">
+                                <i class="fa fa-paper-plane"/>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ── Email verification ─────────────────────────────── -->
+                    <div t-if="otp_required" class="card mb-4 shadow-sm">
+                        <div class="card-header fw-semibold">
+                            <i class="fa fa-user me-1"/> User Verification
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="customer_name">Full Name <span class="text-danger">*</span></label>
+                                    <input id="customer_name" name="customer_name"
+                                           type="text" class="form-control" required="required"
+                                           t-att-value="form_values.get('customer_name') or (partner and partner.name) or ''"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input id="email" name="email"
+                                               type="email" class="form-control o_req_email" required="required"
+                                               t-att-value="form_values.get('email') or (partner and partner.email) or ''"/>
+                                        <button type="button"
+                                                class="btn btn-outline-primary o_send_requisition_otp"
+                                                t-if="otp_required">
+                                            Send OTP
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="employee_code">Customer Code</label>
+                                    <input id="employee_code" name="employee_code"
+                                           type="text" class="form-control o_req_code"
+                                           t-att-value="form_values.get('employee_code') or ''"/>
+                                </div>
+                                <div t-if="otp_required" class="col-md-8 o_otp_verify_area" t-att-style="otp_verified and 'display:none;' or None">
+                                    <label class="form-label" for="requisition_otp">Enter OTP</label>
+                                    <div class="input-group">
+                                        <input id="requisition_otp" type="text"
+                                               name="otp"
+                                               class="form-control o_req_otp"
+                                               inputmode="numeric" maxlength="6"
+                                               t-att-value="form_values.get('otp') or ''"
+                                               placeholder="6 digit OTP"/>
+                                        <button type="button" class="btn btn-primary o_verify_requisition_otp">
+                                            Verify OTP
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary o_resend_requisition_otp">
+                                            Resend OTP
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div t-attf-class="alert mb-0 py-2 o_req_otp_status #{'alert-success' if otp_verified else 'alert-info'}">
+                                        <t t-if="otp_verified and otp_required">Email verified. Product details are active.</t>
+                                        <t t-elif="otp_verified">Signed in. Product details are active.</t>
+                                        <t t-else="">Verify your email with OTP to activate product details.</t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    &lt;!&ndash; ── Customer details ─────────────────────────────── &ndash;&gt;-->
+<!--                    <div class="card mb-4 shadow-sm">-->
+<!--                        <div class="card-header fw-semibold">-->
+<!--                            <i class="fa fa-user me-1"/> Lead Details-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="row g-3">-->
+<!--                                <div class="col-12">-->
+<!--                                    <label class="form-label" for="lead_name">-->
+<!--                                        Lead Subject <span class="text-danger">*</span>-->
+<!--                                    </label>-->
+<!--                                    <input id="lead_name" name="lead_name"-->
+<!--                                           type="text" class="form-control" required="required"-->
+<!--                                           placeholder="e.g. Product Pricing"-->
+<!--                                           t-att-value="form_values.get('lead_name') or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="customer_name">-->
+<!--                                        Contact Name <span class="text-danger">*</span>-->
+<!--                                    </label>-->
+<!--                                    <input id="customer_name" name="customer_name"-->
+<!--                                           type="text" class="form-control" required="required"-->
+<!--                                           t-att-value="form_values.get('customer_name') or (partner and partner.name) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="company_name">Company</label>-->
+<!--                                    <input id="company_name" name="company_name"-->
+<!--                                           type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('company_name') or (partner and partner.company_name) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="email">Email</label>-->
+<!--                                    <input id="email" name="email"-->
+<!--                                           type="email" class="form-control"-->
+<!--                                           t-att-value="form_values.get('email') or (partner and partner.email) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="email_cc">Email CC</label>-->
+<!--                                    <input id="email_cc" name="email_cc"-->
+<!--                                           type="email" class="form-control"-->
+<!--                                           t-att-value="form_values.get('email_cc') or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="phone">Phone</label>-->
+<!--                                    <input id="phone" name="phone"-->
+<!--                                           type="tel" class="form-control"-->
+<!--                                           t-att-value="form_values.get('phone') or (partner and (partner.phone or (partner.mobile if 'mobile' in partner._fields else False))) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="job_position">Job Position</label>-->
+<!--                                    <input id="job_position" name="job_position"-->
+<!--                                           type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('job_position') or (partner and partner.function) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="website">Website</label>-->
+<!--                                    <input id="website" name="website"-->
+<!--                                           type="url" class="form-control"-->
+<!--                                           placeholder="https://www.example.com"-->
+<!--                                           t-att-value="form_values.get('website') or (partner and partner.website) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="priority">Priority</label>-->
+<!--                                    <select id="priority" name="priority" class="form-select">-->
+<!--                                        <t t-foreach="priorities" t-as="priority">-->
+<!--                                            <option t-att-value="priority[0]"-->
+<!--                                                    t-att-selected="(form_values.get('priority') or '0') == priority[0] and 'selected' or None">-->
+<!--                                                <t t-out="priority[1]"/>-->
+<!--                                            </option>-->
+<!--                                        </t>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label">Tags</label>-->
+<!--                                    <div class="d-flex flex-wrap gap-3 pt-2">-->
+<!--                                        <t t-foreach="tags" t-as="tag">-->
+<!--                                            <label class="form-check">-->
+<!--                                                <input name="tag_ids" class="form-check-input" type="checkbox"-->
+<!--                                                       t-att-value="tag.id"-->
+<!--                                                       t-att-checked="tag.id in (form_values.get('tag_ids') or []) and 'checked' or None"/>-->
+<!--                                                <span class="form-check-label" t-out="tag.name"/>-->
+<!--                                            </label>-->
+<!--                                        </t>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; ── Address ───────────────────────────────────────── &ndash;&gt;-->
+<!--                    <div class="card mb-4 shadow-sm">-->
+<!--                        <div class="card-header fw-semibold">-->
+<!--                            <i class="fa fa-map-marker me-1"/> Address-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="row g-3">-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="street">Street</label>-->
+<!--                                    <input id="street" name="street" type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('street') or (partner and partner.street) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-6">-->
+<!--                                    <label class="form-label" for="street2">Street 2</label>-->
+<!--                                    <input id="street2" name="street2" type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('street2') or (partner and partner.street2) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-4">-->
+<!--                                    <label class="form-label" for="city">City</label>-->
+<!--                                    <input id="city" name="city" type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('city') or (partner and partner.city) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-4">-->
+<!--                                    <label class="form-label" for="zip">ZIP</label>-->
+<!--                                    <input id="zip" name="zip" type="text" class="form-control"-->
+<!--                                           t-att-value="form_values.get('zip') or (partner and partner.zip) or ''"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-4">-->
+<!--                                    <label class="form-label" for="country_id">Country</label>-->
+<!--                                    <select id="country_id" name="country_id" class="form-select">-->
+<!--                                        <option value="">Select a country</option>-->
+<!--                                        <t t-foreach="countries" t-as="country">-->
+<!--                                            <option t-att-value="country.id"-->
+<!--                                                    t-att-selected="country.id == (form_values.get('country_id') or (partner and partner.country_id.id)) and 'selected' or None">-->
+<!--                                                <t t-out="country.name"/>-->
+<!--                                            </option>-->
+<!--                                        </t>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-4">-->
+<!--                                    <label class="form-label" for="state_id">State</label>-->
+<!--                                    <select id="state_id" name="state_id" class="form-select">-->
+<!--                                        <option value="">Select a state</option>-->
+<!--                                        <t t-foreach="states" t-as="state">-->
+<!--                                            <option t-att-value="state.id"-->
+<!--                                                    t-att-data-country-id="state.country_id.id"-->
+<!--                                                    t-att-selected="state.id == (form_values.get('state_id') or (partner and partner.state_id.id)) and 'selected' or None">-->
+<!--                                                <t t-out="state.name"/>-->
+<!--                                            </option>-->
+<!--                                        </t>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <!-- ── Product lines ────────────────────────────────── -->
+                    <div class="card mb-4 shadow-sm o_requisition_products_card">
+                        <div class="card-header fw-semibold">
+                            <i class="fa fa-shopping-cart me-1"/> Products
+                        </div>
+                        <fieldset class="o_requisition_products_fieldset" t-att-disabled="not otp_verified and 'disabled' or None">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-borderless align-middle mb-0 o_product_requisition_lines">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-3" style="min-width:130px;">Product Type</th>
+                                            <th style="min-width:210px;">Product Category</th>
+                                            <th class="ps-3" style="min-width:280px;">Product <span class="text-danger">*</span></th>
+                                            <th style="min-width:100px;" class="o_req_goods_col">Qty <span class="text-danger">*</span></th>
+                                            <th style="min-width:120px;" class="o_req_goods_col">UOM</th>
+                                            <th style="min-width:120px;" class="o_req_goods_col">Lead Time</th>
+                                            <th style="min-width:120px;">Budget</th>
+                                            <th style="min-width:160px;" class="o_req_service_col">Expected Date</th>
+                                            <th style="min-width:180px;">Product Description</th>
+                                            <th style="width:48px;"/>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="o_product_requisition_line">
+                                            <td class="ps-3">
+                                                <select name="product_category" class="form-select o_req_product_category" required="required">
+                                                    <option value="goods">Goods</option>
+                                                    <option value="service">Service</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select name="asset_category_id" class="form-select o_req_asset_category">
+                                                    <option value="">Select asset</option>
+                                                    <t t-foreach="asset_categories" t-as="asset_category">
+                                                        <option t-att-value="asset_category.id">
+                                                            <t t-out="asset_category.display_name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input name="product_id" type="hidden" class="o_req_product_id"/>
+                                                <div class="input-group flex-nowrap">
+                                                    <input name="product_name"
+                                                           type="text"
+                                                           class="form-control o_req_product_select"
+                                                           list="o_req_product_options"
+                                                           required="required"
+                                                           placeholder="Type or select a product"/>
+                                                    <select class="form-select o_req_product_dropdown"
+                                                            title="Select product"
+                                                            style="max-width: 48px;">
+                                                        <option value="">⌄</option>
+                                                    </select>
+                                                </div>
+                                                <datalist id="o_req_product_options">
+                                                    <t t-foreach="products" t-as="product">
+                                                        <option t-att-value="product.display_name"
+                                                                t-att-data-product-id="product.id"
+                                                                t-att-data-product-category="'service' if product.type == 'service' else 'goods'"
+                                                                t-att-data-asset-category-ids="product_public_category_ids.get(product.id, '')"
+                                                                t-att-data-uom="product.uom_id.name or ''"
+                                                                t-att-data-price="product_prices.get(product.id, 0.0)">
+                                                        </option>
+                                                    </t>
+                                                </datalist>
+                                            </td>
+                                            <td class="o_req_goods_cell">
+                                                <input name="quantity" type="number"
+                                                       min="1" step="1" value="1"
+                                                       class="form-control o_req_quantity"
+                                                       required="required"/>
+                                            </td>
+                                            <td class="o_req_goods_cell">
+                                                <input name="uom" type="text" class="form-control o_req_uom" placeholder="UOM"/>
+                                            </td>
+                                            <td class="o_req_goods_cell">
+                                                <input name="lead_time" type="number" min="0" step="1"
+                                                       class="form-control" placeholder="Days"/>
+                                            </td>
+                                            <td>
+                                                <input name="budget" type="number" min="0" step="0.01"
+                                                       class="form-control" placeholder="Budget"/>
+                                            </td>
+                                            <td class="o_req_service_cell">
+                                                <input name="expected_date" type="date" class="form-control"/>
+                                            </td>
+                                            <td>
+                                                <input name="description" type="text"
+                                                       class="form-control"
+                                                       placeholder="Optional note"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger o_remove_requisition_line"
+                                                        title="Remove line">
+                                                    <i class="fa fa-trash"/>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="8" class="text-end fw-semibold ps-3">Total</td>
+                                            <td class="text-end fw-bold">
+<!--                                                <span class="o_req_grand_total">—</span>-->
+                                            </td>
+                                            <td colspan="2"/>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <button type="button" class="btn btn-sm btn-outline-primary o_add_requisition_line">
+                                <i class="fa fa-plus me-1"/> Add Product
+                            </button>
+                        </div>
+                        </fieldset>
+                    </div>
+
+                    <!-- ── Notes ────────────────────────────────────────── -->
+<!--                    <div class="card mb-4 shadow-sm">-->
+<!--                        <div class="card-header fw-semibold">-->
+<!--                            <i class="fa fa-sticky-note me-1"/> Notes-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <textarea id="notes" name="notes" class="form-control" rows="3"-->
+<!--                                      placeholder="Any additional information…"><t t-out="form_values.get('notes') or ''"/></textarea>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <!-- ── Actions ──────────────────────────────────────── -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="/" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary o_submit_requisition">
+                            <i class="fa fa-paper-plane me-1"/> Submit Requisition
+                        </button>
+                    </div>
+                        </form>
+
+                    <t t-if="allow_bulk_upload">
+                        <div class="card mt-4 mb-4 shadow-sm border-0">
+                            <div class="card-header bg-primary text-white">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <div>
+                                        <div class="fw-semibold">
+                                            <i class="fa fa-upload me-2"/>
+                                            Bulk Upload Requisition Lines
+                                        </div>
+                                        <div class="small opacity-75">
+                                            Upload goods or services from an Excel/CSV file.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-lg-5">
+                                        <label class="form-label fw-semibold mb-2">Templates</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <a href="/my/product-requisition/template?type=goods"
+                                               class="btn btn-outline-primary">
+                                                <i class="fa fa-download me-2"/>
+                                                Goods Template
+                                            </a>
+                                            <a href="/my/product-requisition/template?type=service"
+                                               class="btn btn-outline-primary">
+                                                <i class="fa fa-download me-2"/>
+                                                Service Template
+                                            </a>
+                                            <a href="/my/product-requisition/template"
+                                               class="btn btn-outline-secondary">
+                                                <i class="fa fa-table me-2"/>
+                                                Combined
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <form action="/my/product-requisition/bulk-upload"
+                                          method="post"
+                                          enctype="multipart/form-data"
+                                          class="col-lg-7">
+                                        <input type="hidden"
+                                               name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <label class="form-label fw-semibold mb-2">Upload File</label>
+                                        <div class="input-group">
+                                            <input type="file"
+                                                   name="requisition_file"
+                                                   class="form-control"
+                                                   accept=".xlsx,.xls,.csv"
+                                                   required="1"/>
+                                            <button type="submit"
+                                                    class="btn btn-primary">
+                                                <i class="fa fa-paper-plane me-2"/>
+                                                Submit Bulk Upload
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ── History page ───────────────────────────────────────────────────── -->
+    <template id="product_requisition_history" name="Product Requisition History">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container py-4">
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/my/home">My Account</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Product Requisition History</li>
+                        </ol>
+                    </nav>
+
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <h1 class="h2 mb-0">Product Requisition History</h1>
+                        <a href="/my/product-requisition" class="btn btn-primary">
+                            <i class="fa fa-plus me-1"/> New Requisition
+                        </a>
+                    </div>
+
+                    <div t-if="not requisitions" class="alert alert-info d-flex align-items-center gap-2">
+                        <i class="fa fa-info-circle"/>
+                        <span>No product requisitions have been submitted yet.</span>
+                    </div>
+
+                    <div t-if="requisitions" class="accordion" id="o_product_requisition_history">
+                        <t t-foreach="requisitions" t-as="lead">
+                            <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
+                                <h2 class="accordion-header" t-attf-id="o_req_heading_#{lead.id}">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse"
+                                            t-attf-data-bs-target="#o_req_collapse_#{lead.id}"
+                                            aria-expanded="false"
+                                            t-attf-aria-controls="o_req_collapse_#{lead.id}">
+                                        <span class="d-flex flex-column flex-md-row align-items-md-center gap-md-4 w-100 pe-3">
+                                            <span class="fw-semibold" t-out="lead.name"/>
+                                            <span class="text-muted small">
+                                                <i class="fa fa-calendar me-1"/>
+                                                <span t-field="lead.create_date" t-options="{'widget': 'datetime'}"/>
+                                            </span>
+                                            <span t-if="lead.stage_id" class="badge text-bg-secondary align-self-start align-self-md-center">
+                                                <t t-out="lead.stage_id.name"/>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </h2>
+                                <div t-attf-id="o_req_collapse_#{lead.id}"
+                                     class="accordion-collapse collapse"
+                                     t-attf-aria-labelledby="o_req_heading_#{lead.id}"
+                                     data-bs-parent="#o_product_requisition_history">
+                                    <div class="accordion-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Description</th>
+                                                        <th class="text-end">Qty</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr t-foreach="lead.order_line_ids" t-as="line">
+                                                        <td t-out="line.product_id.display_name"/>
+                                                        <td t-out="line.name or '-'"/>
+                                                        <td class="text-end" t-out="line.product_uom_qty"/>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ── Success page ───────────────────────────────────────────────────── -->
+    <template id="product_requisition_success" name="Product Requisition — Success">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container text-center py-5">
+                    <i class="fa fa-check-circle fa-4x text-success mb-3"/>
+                    <h3 class="fw-bold">Requisition Submitted!</h3>
+                    <p class="text-muted mb-1">
+                        Your request has been received and a CRM lead has been created.
+                    </p>
+                    <p class="text-muted">
+                        Our team will review the details and get back to you shortly.
+                    </p>
+                    <div t-if="lead" class="alert alert-success d-inline-block mt-3 px-4">
+                        Reference: <strong t-out="lead.name"/>
+                    </div>
+                    <div class="mt-4 d-flex justify-content-center gap-2">
+                        <a href="/product-requisition" class="btn btn-outline-primary">
+                            <i class="fa fa-plus me-1"/> New Requisition
+                        </a>
+                        <a href="/my/product-requisition/history" class="btn btn-outline-secondary">
+                            <i class="fa fa-history me-1"/> View History
+                        </a>
+                        <a href="/" class="btn btn-primary">
+                            <i class="fa fa-home me-1"/> Back to Website
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

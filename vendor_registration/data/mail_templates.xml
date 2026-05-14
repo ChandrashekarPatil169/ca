@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record id="mail_template_vendor_received_v2" model="mail.template">
+        <field name="name">Vendor Registration: Request Received</field>
+        <field name="model_id" ref="model_vendor_registration"/>
+        <field name="subject">We have received your vendor registration request</field>
+        <field name="email_from">{{ env.company.email or env.company.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+    <div style="text-align:center; margin-bottom: 12px;">
+        <img src="/vendor_registration/static/src/img/default_vendor_logo.svg" alt="Company Logo" style="max-height: 64px; width: auto;"/>
+    </div>
+    <h2 style="color: #4e73df;">Vendor Registration Request Received</h2>
+    <p>Dear <strong><t t-out="object.contact_name or object.name"/></strong>,</p>
+    <p>Thank you for registering as a vendor with us. We have received your request and our team will review it shortly.</p>
+    <table style="width:100%; border-collapse:collapse; margin: 16px 0;">
+        <tr><td style="padding:6px; font-weight:bold;">Company Name</td><td style="padding:6px;"><t t-out="object.name or ''"/></td></tr>
+        <tr style="background:#f8f9fa;"><td style="padding:6px; font-weight:bold;">GST Number</td><td style="padding:6px;"><t t-out="object.gst_number or 'N/A'"/></td></tr>
+        <tr><td style="padding:6px; font-weight:bold;">Email</td><td style="padding:6px;"><t t-out="object.email or ''"/></td></tr>
+        <tr style="background:#f8f9fa;"><td style="padding:6px; font-weight:bold;">Phone</td><td style="padding:6px;"><t t-out="object.phone or ''"/></td></tr>
+    </table>
+    <p style="color:#6c757d;">Once your registration is reviewed and approved, you will receive a separate email with your portal login credentials.</p>
+    <p>If you have any questions, feel free to contact us.</p>
+    <p>Regards,<br/><strong>Procurement Team</strong></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="mail_template_vendor_approved_v2" model="mail.template">
+        <field name="name">Vendor Registration: Approved with Credentials</field>
+        <field name="model_id" ref="model_vendor_registration"/>
+        <field name="subject">Your Vendor Registration is Approved - Portal Access Details</field>
+        <field name="email_from">{{ env.company.email or env.company.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+    <div style="text-align:center; margin-bottom: 12px;">
+        <img src="/vendor_registration/static/src/img/default_vendor_logo.svg" alt="Company Logo" style="max-height: 64px; width: auto;"/>
+    </div>
+    <h2 style="color: #1cc88a;">Congratulations! Your Registration is Approved</h2>
+    <p>Dear <strong><t t-out="object.contact_name or object.name"/></strong>,</p>
+    <p>We are pleased to inform you that your vendor registration has been <strong>approved</strong>. You can now access our vendor portal using the credentials below.</p>
+    <div style="background:#f0fff4; border:1px solid #1cc88a; border-radius:6px; padding:16px; margin:16px 0;">
+        <p style="margin:4px 0;"><strong>Website Login:</strong> <a t-att-href="ctx.get('product_registration_url') or object._get_product_registration_url()"><t t-out="ctx.get('product_registration_url') or object._get_product_registration_url()"/></a></p>
+        <p style="margin:4px 0;"><strong>Username / Email:</strong> <t t-out="object.email or ''"/></p>
+        <p style="margin:4px 0;"><strong>Password:</strong> <t t-out="ctx.get('password', '(contact admin for password)')"/></p>
+    </div>
+    <p>Product registration link (available after approval):<br/>
+       <a t-att-href="ctx.get('product_registration_url') or object._get_product_registration_url()"><t t-out="ctx.get('product_registration_url') or object._get_product_registration_url()"/></a>
+    </p>
+    <p>After logging in, use the above link or navigate to <strong>My Account</strong> to submit your product and service catalog for review.</p>
+    <p style="color:#e74a3b; font-size:12px;">Please change your password after first login for security.</p>
+    <p>Regards,<br/><strong>Procurement Team</strong></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

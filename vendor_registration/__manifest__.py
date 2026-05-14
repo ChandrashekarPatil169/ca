@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Vendor Registration Portal',
+    'version': '19.0.1.1.0',
+    'category': 'Website/Purchase',
+    'summary': 'Website portal for vendor registration, approval workflow, and product/service submission.',
+    'author': 'Custom',
+    'license': 'LGPL-3',
+    'depends': [
+        'website',
+        'portal',
+        'contacts',
+        'purchase',
+        'stock',
+        'mail',
+        'auth_signup',
+        'zb_product_approve',
+        'l10n_in',
+        'partner_autocomplete',
+    ],
+    'data': [
+        'security/vendor_registration_security.xml',
+        'security/ir.model.access.csv',
+        'data/ir_config_parameter_data.xml',
+        'data/mail_templates.xml',
+        'views/res_config_settings_views.xml',
+        'views/vendor_product_request_views.xml',
+        'views/vendor_registration_views.xml',
+        'views/portal_templates.xml',
+        'views/vendor_registration_form_template.xml',
+        'views/vendor_product_form_template.xml',
+        'views/menus.xml',
+    ],
+    'assets': {
+        'web.assets_frontend': [
+            'vendor_registration/static/src/css/vendor_registration_chatbot.css',
+            'vendor_registration/static/src/js/vendor_registration.js',
+        ],
+    },
+    'post_init_hook': 'post_init_hook',
+    'installable': True,
+    'application': True,
+}

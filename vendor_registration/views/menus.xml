@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Vendor registration dropdown under Purchase > Orders ──────────── -->
+    <menuitem id="menu_vendor_registration_purchase_root"
+              name="Vendor Registrations"
+              parent="purchase.menu_procurement_management"
+              sequence="16"
+              groups="vendor_registration.group_vendor_registration_manager"/>
+
+    <menuitem id="menu_vendor_registration_purchase_requested"
+              name="Requested Vendors"
+              parent="menu_vendor_registration_purchase_root"
+              action="action_vendor_registration_requested"
+              sequence="10"/>
+
+    <menuitem id="menu_vendor_registration_purchase_all"
+              name="All Registrations"
+              parent="menu_vendor_registration_purchase_root"
+              action="action_vendor_registration_all"
+              sequence="20"/>
+
+    <!-- ── Purchase menu for product requests ────────────────────────────── -->
+    <!-- Using purchase app menu as it's more relevant than stock config -->
+    <menuitem id="menu_vendor_product_request_purchase"
+              name="Vendor Product Requests"
+              parent="purchase.menu_purchase_root"
+              action="action_vendor_product_request"
+              sequence="30"
+              groups="vendor_registration.group_vendor_registration_manager"/>
+
+    <!-- Also available from Inventory > Configuration -->
+    <menuitem id="menu_vendor_product_request_inventory"
+              name="Vendor Product Requests"
+              parent="stock.menu_stock_config_settings"
+              action="action_vendor_product_request"
+              sequence="50"
+              groups="vendor_registration.group_vendor_registration_manager"/>
+
+</odoo>

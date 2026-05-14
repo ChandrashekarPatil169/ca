@@ -1,0 +1,215 @@
+<odoo>
+    <record id="action_report_user_access_form" model="ir.actions.report">
+        <field name="name">User Access Request Form</field>
+        <field name="model">it.user.access.form</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">it_asset_requisition.report_user_access_form_document</field>
+        <field name="report_file">it_asset_requisition.report_user_access_form_document</field>
+        <field name="binding_model_id" ref="model_it_user_access_form"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'User Access Request - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_user_access_form_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="font-family: Arial, sans-serif; font-size: 11px; color: #111;">
+                    <style>
+                        .uaf-wrap { border: 2px solid #111; padding: 12px; }
+                        .uaf-title { border-top: 1px solid #111; border-bottom: 1px solid #111; text-align: center; font-weight: bold; padding: 6px 0; margin: 48px -12px 12px; }
+                        .uaf-section { border: 1px solid #111; margin-top: 10px; }
+                        .uaf-section-title { background: #f2f2f2; border-bottom: 1px solid #111; text-align: center; font-weight: bold; padding: 3px; }
+                        .uaf-row { display: table; width: 100%; table-layout: fixed; }
+                        .uaf-cell { display: table-cell; padding: 5px 7px; vertical-align: top; }
+                        .uaf-label { font-weight: bold; white-space: nowrap; }
+                        .uaf-line { border-bottom: 1px solid #333; display: inline-block; min-height: 14px; min-width: 180px; padding: 0 4px; }
+                        .uaf-line-wide { min-width: 330px; }
+                        .uaf-check { display: inline-block; width: 11px; height: 11px; border: 1px solid #333; text-align: center; line-height: 10px; font-size: 9px; margin-right: 3px; }
+                        .uaf-boxline { border: 1px solid #111; padding: 7px; margin-top: 6px; }
+                        .uaf-small { font-size: 9px; }
+                        .uaf-muted { color: #555; }
+                    </style>
+
+                    <div class="uaf-wrap">
+                        <div class="uaf-title">USER ACCESS REQUEST FORM</div>
+
+                        <div class="uaf-row">
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Request Date (DD/MM/YYYY):</span>
+                                <span class="uaf-line">
+                                    <span t-esc="o.request_date and o.request_date.strftime('%d/%m/%Y') or ''"/>
+                                </span>
+                            </div>
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Reference:</span>
+                                <span class="uaf-line"><span t-field="o.name"/></span>
+                            </div>
+                        </div>
+
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">Employee Name:</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.employee_id"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">First Name:</span>
+                                <span class="uaf-line"><span t-field="o.first_name"/></span>
+                                <span class="uaf-label" style="margin-left: 24px;">Last Name:</span>
+                                <span class="uaf-line"><span t-field="o.last_name"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">Department/Location:</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.department_location"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Extension No:</span>
+                                <span class="uaf-line"><span t-field="o.extension_no"/></span>
+                            </div>
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Location Code:</span>
+                                <span class="uaf-line"><span t-field="o.location_code"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Location:</span>
+                                <span class="uaf-line"><span t-field="o.location"/></span>
+                            </div>
+                            <div class="uaf-cell" style="width: 50%;">
+                                <span class="uaf-label">Designation:</span>
+                                <span class="uaf-line"><span t-field="o.designation"/></span>
+                            </div>
+                        </div>
+
+                        <div class="uaf-section">
+                            <div class="uaf-section-title">Access Required For</div>
+                            <div class="uaf-cell">
+                                <span class="uaf-check"><t t-if="o.domain_account">X</t></span>Domain Account
+                                <span class="uaf-check"><t t-if="o.ehrms_access">X</t></span>eHRMS
+                                <span class="uaf-check"><t t-if="o.eiis_access">X</t></span>eIIS
+                                <span class="uaf-check"><t t-if="o.elms_access">X</t></span>eLMS
+                                <span class="uaf-check"><t t-if="o.md_sl_access">X</t></span>MD-SL
+                                <span class="uaf-check"><t t-if="o.hyperion_access">X</t></span>Hyperion
+                                <span class="uaf-check"><t t-if="o.sonar_access">X</t></span>Sonar
+                                <span class="uaf-check"><t t-if="o.email_id_required">X</t></span>Email-ID
+                            </div>
+                        </div>
+
+                        <div class="uaf-section">
+                            <div class="uaf-section-title">Shared Drive Access</div>
+                            <div class="uaf-cell">
+                                <span class="uaf-check"><t t-if="o.shared_drive_access">X</t></span>Shared Drive Access
+                                <span class="uaf-check"><t t-if="o.drive_o">X</t></span>O:
+                                <span class="uaf-check"><t t-if="o.drive_m">X</t></span>M:
+                                <span class="uaf-check"><t t-if="o.drive_r">X</t></span>R:
+                                <span class="uaf-check"><t t-if="o.drive_h">X</t></span>H:
+                                <span class="uaf-check"><t t-if="o.drive_p">X</t></span>P:
+                                <span class="uaf-check"><t t-if="o.drive_g">X</t></span>G:
+                                <span class="uaf-check"><t t-if="o.drive_i">X</t></span>I:
+                            </div>
+                        </div>
+
+                        <div class="uaf-section">
+                            <div class="uaf-section-title">Internet Access</div>
+                            <div class="uaf-cell">
+                                <span class="uaf-check"><t t-if="o.internet_access">X</t></span>Internet Access
+                                <span class="uaf-check"><t t-if="o.lan_access">X</t></span>LAN Access Required
+                                <span class="uaf-check"><t t-if="o.wi_data_access">X</t></span>WI-DATA Access
+                                <span class="uaf-check"><t t-if="o.guest_wifi_only">X</t></span>Guest Wi-Fi Only
+                            </div>
+                        </div>
+
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">User ID:</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.user_id_text"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">Computer Name:</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.computer_name"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">Access Level:</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.access_level"/></span>
+                            </div>
+                        </div>
+                        <div class="uaf-row">
+                            <div class="uaf-cell">
+                                <span class="uaf-label">E-Mail ID</span>
+                                <span class="uaf-small"> (if ticked above):</span>
+                                <span class="uaf-line uaf-line-wide"><span t-field="o.email_id"/></span>
+                            </div>
+                        </div>
+
+                        <div class="uaf-boxline">
+                            I <span class="uaf-line" style="min-width: 210px;"></span>
+                            Have read and understood the policies of the firm including the IT security guidelines and agree to abide by the rules and policies of Kelvin Catering Services Emirates LLC.
+                            <br/>
+                            <span class="uaf-label">Signature of the Employee:</span>
+                            <span class="uaf-line uaf-line-wide"><span t-field="o.employee_signature"/></span>
+                        </div>
+
+                        <div class="uaf-section">
+                            <div class="uaf-section-title">Approving Authority</div>
+                            <div class="uaf-row">
+                                <div class="uaf-cell" style="width: 50%;">
+                                    <div class="uaf-label">Department Head/Manager</div>
+                                    <div>Name: <span class="uaf-line"><span t-field="o.department_head_name"/></span></div>
+                                    <div style="margin-top: 8px;">Signature: <span class="uaf-line"><span t-field="o.department_head_signature"/></span></div>
+                                </div>
+                                <div class="uaf-cell" style="width: 50%;">
+                                    <div class="uaf-label">General Manager</div>
+                                    <div>Name: <span class="uaf-line"><span t-field="o.general_manager_name"/></span></div>
+                                    <div style="margin-top: 8px;">Signature: <span class="uaf-line"><span t-field="o.general_manager_signature"/></span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="uaf-section">
+                            <div class="uaf-section-title">For IS &amp; T Dept Use Only</div>
+                            <div class="uaf-row">
+                                <div class="uaf-cell" style="width: 50%;">
+                                    <span class="uaf-label">Created By:</span>
+                                    <span class="uaf-line"><span t-field="o.ist_created_by"/></span>
+                                </div>
+                                <div class="uaf-cell" style="width: 50%;">
+                                    <span class="uaf-label">Signature:</span>
+                                    <span class="uaf-line"><span t-field="o.ist_signature"/></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="uaf-section" t-if="o.notes or o.description">
+                            <div class="uaf-section-title">Notes / Description</div>
+                            <div class="uaf-cell" t-if="o.notes">
+                                <div class="uaf-label">Notes</div>
+                                <span t-field="o.notes"/>
+                            </div>
+                            <div class="uaf-cell" t-if="o.description">
+                                <div class="uaf-label">Description</div>
+                                <span t-field="o.description"/>
+                            </div>
+                        </div>
+
+                        <div class="uaf-row uaf-small uaf-muted" style="margin-top: 10px;">
+                            <div class="uaf-cell">Issue: 0</div>
+                            <div class="uaf-cell">Rev. No.: 0</div>
+                            <div class="uaf-cell">CQF-C350-05 KCS-FRM.: 971</div>
+                            <div class="uaf-cell">DOI: 01-May-14</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

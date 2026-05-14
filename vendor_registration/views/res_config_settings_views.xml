@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_vendor_registration" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.vendor.registration</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="70"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Vendor Registration"
+                     string="Vendor Registration"
+                     name="vendor_registration"
+                     logo="/purchase/static/description/icon.png"
+                     groups="base.group_system">
+                    <block title="Portal Access" name="vendor_registration_portal_access">
+                        <setting string="Enable Vendor Registration"
+                                 id="vendor_registration_module_enabled_setting"
+                                 help="Allow vendors to access registration, GST lookup, product submission, template, and bulk upload routes.">
+                            <field name="vendor_registration_module_enabled"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

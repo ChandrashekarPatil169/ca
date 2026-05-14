@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Website top nav menu entry ───────────────────────────────────── -->
+    <record id="website_menu_vendor_registration" model="website.menu">
+        <field name="name">Vendor Registration</field>
+        <field name="url">/vendor-registration</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">50</field>
+    </record>
+
+    <!-- ── Portal home: add Vendor Registration cards ───────────────────── -->
+    <template id="portal_my_home_vendor_registration"
+              name="Vendor Registration Portal Entry"
+              inherit_id="portal.portal_my_home"
+              priority="40">
+
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+
+        <div id="portal_service_category" position="inside">
+            <t t-set="_vendor_registration_enabled"
+               t-value="request.env['ir.config_parameter'].sudo().get_param('vendor_registration.module_enabled', 'True') not in ('False', 'false', '0', 'no', 'off')"/>
+            <t t-if="_vendor_registration_enabled">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/web/static/img/bill.svg'"/>
+                <t t-set="title">Vendor Registration</t>
+                <t t-set="text">Register as a vendor – submit your company and GST details for approval.</t>
+                <t t-set="url" t-value="'/vendor-registration'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+            <t t-if="request.env.user and not request.env.user._is_public()">
+                <t t-set="_vr_approved" t-value="request.env['vendor.registration'].sudo().search([('partner_id','=',request.env.user.partner_id.id),('state','=','approved')], limit=1)"/>
+                <t t-if="_vr_approved">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="icon" t-value="'/web/static/img/bill.svg'"/>
+                        <t t-set="title">Register Products &amp; Services</t>
+                        <t t-set="text">Submit your product and service catalog for review.</t>
+                        <t t-set="url" t-value="'/my/vendor-products'"/>
+                        <t t-set="config_card" t-value="True"/>
+                    </t>
+                </t>
+            </t>
+            </t>
+        </div>
+    </template>
+
+    <!-- ── Portal breadcrumbs ────────────────────────────────────────────── -->
+    <template id="vendor_registration_breadcrumbs"
+              inherit_id="portal.portal_breadcrumbs"
+              name="Vendor Registration Breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'vendor_registration'" class="breadcrumb-item active">
+                Vendor Registration
+            </li>
+            <li t-if="page_name == 'vendor_products'" class="breadcrumb-item active">
+                Register Products &amp; Services
+            </li>
+        </xpath>
+    </template>
+
+</odoo>

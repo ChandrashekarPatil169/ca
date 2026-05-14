@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_it_asset_requisition,it.asset.requisition,model_it_asset_requisition,base.group_user,1,1,1,1
+access_it_asset_requisition_purchase,it.asset.requisition,model_it_asset_requisition,purchase.group_purchase_user,1,1,1,1

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_product_requisition" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.product.requisition</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="70"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Product Requisition"
+                     string="Product Requisition"
+                     name="product_requisition"
+                     logo="/sale/static/description/icon.png"
+                     groups="base.group_system">
+                    <block title="Module Access" name="product_requisition_portal_access">
+                        <setting string="Enable Product Requisition"
+                                 id="product_requisition_module_enabled_setting"
+                                 help="Allow customers and internal users to use the product requisition portal, history, OTP, template, bulk upload, CRM order lines, and sales RFQ flow.">
+                            <field name="product_requisition_module_enabled"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="dgz_sale_order_form_requisition_purchase" model="ir.ui.view">
+        <field name="name">dgz.sale.order.form.requisition.purchase</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <field name="is_dropship" optional="show"/>
+                <field name="vendor_ids" widget="many2many_tags" optional="show" options="{'no_create': True}"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('state', '=', 'approved')]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']" position="attributes">
+                <attribute name="domain">[('state', '=', 'approved')]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+                <field name="is_dropship"/>
+                <field name="vendor_ids" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('state', '=', 'approved')]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

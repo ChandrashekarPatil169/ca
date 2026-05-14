@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+
+        <!-- ========================================== -->
+        <!-- CUSTOM GROUP: PURCHASE MANAGER              -->
+        <!-- ========================================== -->
+        <record id="group_it_purchase_manager" model="res.groups">
+            <field name="name">Purchase Manager</field>
+
+            <!-- ADD THIS -->
+            <field name="implied_ids" eval="[
+        (4, ref('purchase.group_purchase_user')),
+        (4, ref('purchase.group_purchase_manager'))
+    ]"/>
+        </record>
+
+        <record id="group_user_access_department_manager" model="res.groups">
+            <field name="name">User Access Department Manager</field>
+            <field name="implied_ids" eval="[(4, ref('approvals.group_approval_user'))]"/>
+        </record>
+
+        <record id="group_user_access_general_manager" model="res.groups">
+            <field name="name">User Access General Manager</field>
+            <field name="implied_ids" eval="[(4, ref('approvals.group_approval_user'))]"/>
+        </record>
+
+
+        <!-- ========================================== -->
+        <!-- EXISTING ACCESS (UNCHANGED LOGIC)           -->
+        <!-- ========================================== -->
+        <record id="access_it_asset_requisition_all" model="ir.model.access">
+            <field name="name">it.asset.requisition.all</field>
+            <field name="model_id" ref="model_it_asset_requisition"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_it_asset_requisition_purchase_user" model="ir.model.access">
+            <field name="name">it.asset.requisition.purchase.user</field>
+            <field name="model_id" ref="model_it_asset_requisition"/>
+            <field name="group_id" ref="purchase.group_purchase_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <record id="access_it_user_access_form_all" model="ir.model.access">
+            <field name="name">it.user.access.form.all</field>
+            <field name="model_id" ref="model_it_user_access_form"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+    </data>
+</odoo>

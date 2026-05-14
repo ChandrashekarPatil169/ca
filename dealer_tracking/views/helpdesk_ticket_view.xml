@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- =========================
+         HELPDESK: DEALER + DOMAIN
+    ========================== -->
+    <record id="view_helpdesk_ticket_form_inherit_dealer" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.dealer.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert Dealer EXACTLY before Customer -->
+            <xpath expr="//group/group/field[@name='partner_id']" position="before">
+                <field name="dealer_id"
+                       domain="[('is_dealer', '=', True)]"/>
+            </xpath>
+
+            <!-- Apply dynamic domain to Serial Number -->
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="domain">lot_domain</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- =========================
+         STOCK LOT: ADD WARRANTY END DATE IN TREE
+    ========================== -->
+    <record id="view_stock_lot_tree_inherit_warranty" model="ir.ui.view">
+        <field name="name">stock.lot.tree.warranty</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Warranty End Date after Dealer Code -->
+            <xpath expr="//field[@name='dealer_code']" position="after">
+                <field name="warranty_end_date"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
+
