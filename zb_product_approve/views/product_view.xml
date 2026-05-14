@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="product_template_view_order_form_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.form.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+				<xpath expr="//form/sheet" position="before">
+                <header>	
+					<field name="state" widget="statusbar" statusbar_visible="draft,approved,mapped"/>
+
+				<button id="button_verify" name="action_verify" string="Approve" class="btn-primary" invisible = "state != 'draft'" type="object"/>
+					<button id="button_map_product" name="action_map_product" string="Map It" class="btn-secondary" invisible = "state != 'draft' or not mapped_product_tmpl_id" type="object" confirm="Once you map you cannot approve it."/>
+					<button id="button_set_to_draft" name="action_draft" string="Set to Draft" class="btn-primary" invisible = "state == 'draft'" type="object"/>
+				</header>
+			</xpath>
+				<xpath expr="//field[@name='categ_id']" position="after">
+					<label for="mapped_product_tmpl_id"/>
+					<div class="o_row">
+						<field name="mapped_product_tmpl_id" readonly="state == 'approved'" options="{'no_create': True}"/>
+						<button name="action_map_product" string="Map It" class="btn-secondary" invisible = "state != 'draft' or not mapped_product_tmpl_id" type="object" confirm="Once you map you cannot approve it."/>
+					</div>
+				</xpath>
+           </field>
+       	</record>
+       	<record id="product_product_view_order_form_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.product.form.zb.product.approve</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+<xpath expr="//form/sheet" position="before">
+                <header>	
+					<field name="state" widget="statusbar" statusbar_visible="draft,approved,mapped"/>
+
+				<button id="button_verify" name="action_verify" string="Approve" class="btn-primary" invisible = "state != 'draft'" type="object"/>
+					<button id="button_map_product" name="action_map_product" string="Map It" class="btn-secondary" invisible = "state != 'draft' or not mapped_product_tmpl_id" type="object" confirm="Once you map you cannot approve it."/>
+					<button id="button_set_to_draft" name="action_draft" string="Set to Draft" class="btn-primary" invisible = "state == 'draft'" type="object"/>
+				</header>
+			</xpath>
+				<xpath expr="//field[@name='categ_id']" position="after">
+					<label for="mapped_product_tmpl_id"/>
+					<div class="o_row">
+						<field name="mapped_product_tmpl_id" readonly="state == 'approved'" options="{'no_create': True}"/>
+						<button name="action_map_product" string="Map It" class="btn-secondary" invisible = "state != 'draft' or not mapped_product_tmpl_id" type="object" confirm="Once you map you cannot approve it."/>
+					</div>
+				</xpath>
+           </field>
+       	</record>
+       
+       	<record id="product_template_view_tree_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.tree.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='uom_id']" position="after">
+					<button name="action_verify" string="Approve" class="btn-primary" type="object" invisible = "state != 'draft'"/>
+					<button name="action_map_product" string="Map It" class="btn-secondary" type="object" invisible = "state != 'draft' or not mapped_product_tmpl_id" confirm="Once you map you cannot approve it."/>
+					<field name="state" widget="badge" decoration-danger="state=='draft'" decoration-success="state=='approved'" decoration-info="state=='mapped'" optional="show" />
+				</xpath>
+           </field>
+       	</record>
+       	
+       	<record id="product_product_view_tree_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.product.tree.zb.product.approve</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='virtual_available']" position="after">
+					<button name="action_verify" string="Approve" class="btn-primary" type="object" invisible = "state != 'draft'"/>
+					<button name="action_map_product" string="Map It" class="btn-secondary" type="object" invisible = "state != 'draft' or not mapped_product_tmpl_id" confirm="Once you map you cannot approve it."/>
+					<field name="state" widget="badge" decoration-danger="state=='draft'" decoration-success="state=='approved'" decoration-info="state=='mapped'" optional="show" />
+				</xpath>
+           </field>
+       	</record>
+       
+       <record id="action_draft_all" model="ir.actions.server">
+			<field name="name">Set to Draft</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_template"/>
+			<field name="binding_model_id" ref="model_product_template" />
+			<field name="state">code</field>
+			<field name="code">records.action_draft()</field>
+			<field name="binding_view_types">list</field>
+			<field name="group_ids" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="action_verify_all" model="ir.actions.server">
+			<field name="name">Approve</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_template"/>
+			<field name="binding_model_id" ref="model_product_template" />
+			<field name="state">code</field>
+			<field name="code">records.action_verify()</field>
+			<field name="binding_view_types">list</field>
+			<field name="group_ids" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="action_draft_all_product" model="ir.actions.server">
+			<field name="name">Set to Draft</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_product"/>
+			<field name="binding_model_id" ref="model_product_product" />
+			<field name="state">code</field>
+			<field name="code">records.action_draft()</field>
+			<field name="binding_view_types">list</field>
+			<field name="group_ids" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+			
+		</record>
+		
+		<record id="action_verify_all_product" model="ir.actions.server">
+			<field name="name">Approve</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_product"/>
+			<field name="binding_model_id" ref="model_product_product" />
+			<field name="state">code</field>
+			<field name="code">records.action_verify()</field>
+			<field name="binding_view_types">list</field>
+			<field name="group_ids" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="product_template_search_view_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.search.view.inherit.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+			   	<xpath expr="//search/group" 
+			    	   position="inside">
+			    	<filter string="State" 
+			    			name="state" 
+			    			context="{'group_by':'state'}"/>	
+			   	</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

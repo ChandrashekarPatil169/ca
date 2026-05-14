@@ -1,0 +1,232 @@
+<odoo>
+
+    <record id="view_user_access_form_list" model="ir.ui.view">
+        <field name="name">it.user.access.form.list</field>
+        <field name="model">it.user.access.form</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="department_location"/>
+                <field name="request_date"/>
+                <field name="project_id"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_user_access_form_form" model="ir.ui.view">
+        <field name="name">it.user.access.form.form</field>
+        <field name="model">it.user.access.form</field>
+        <field name="arch" type="xml">
+            <form string="User Access Form">
+                <header>
+                    <button name="action_print_user_access_form"
+                            type="object"
+                            string="Print"
+                            class="btn-secondary"/>
+                    <button name="action_request_approval"
+                            type="object"
+                            string="Request Approval"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_admin_approve"
+                            type="object"
+                            string="Admin Approve"
+                            groups="base.group_system"
+                            invisible="state not in ['submitted']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,task_created"/>
+                </header>
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object"
+                                name="action_open_approval"
+                                class="oe_stat_button"
+                                icon="fa-check"
+                                invisible="approval_count == 0">
+                            <field name="approval_count" widget="statinfo" string="Approval"/>
+                        </button>
+                        <button type="object"
+                                name="action_open_task"
+                                class="oe_stat_button"
+                                icon="fa-tasks"
+                                invisible="task_count == 0">
+                            <field name="task_count" widget="statinfo" string="Task"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <span class="o_form_label">User Access Form</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Employee Details">
+                            <field name="employee_id"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="request_date"/>
+                            <field name="department_location"/>
+                            <field name="extension_no"/>
+                            <field name="location"/>
+                            <field name="location_code"/>
+                            <field name="designation"/>
+                            <field name="email_id"/>
+                        </group>
+                        <group string="Access Required For">
+                            <field name="domain_account"/>
+                            <field name="ehrms_access"/>
+                            <field name="eiis_access"/>
+                            <field name="elms_access"/>
+                            <field name="md_sl_access"/>
+                            <field name="hyperion_access"/>
+                            <field name="sonar_access"/>
+                            <field name="email_id_required"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Shared Drive Access">
+                            <field name="shared_drive_access"/>
+                            <field name="drive_o" invisible="not shared_drive_access"/>
+                            <field name="drive_m" invisible="not shared_drive_access"/>
+                            <field name="drive_r" invisible="not shared_drive_access"/>
+                            <field name="drive_h" invisible="not shared_drive_access"/>
+                            <field name="drive_p" invisible="not shared_drive_access"/>
+                            <field name="drive_g" invisible="not shared_drive_access"/>
+                            <field name="drive_i" invisible="not shared_drive_access"/>
+                        </group>
+                        <group string="Internet Access">
+                            <field name="internet_access"/>
+                            <field name="lan_access"/>
+                            <field name="wi_data_access"/>
+                            <field name="guest_wifi_only"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="User / Device">
+                            <field name="user_id_text"/>
+                            <field name="computer_name"/>
+                            <field name="access_level"/>
+                            <field name="employee_signature"/>
+                        </group>
+                        <group string="For IS &amp; T Dept Use Only">
+                            <field name="ist_created_by"/>
+                            <field name="ist_signature"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <group>
+                                <field name="description" nolabel="1"
+                                       placeholder="Enter details to carry into approval request and project task."/>
+                            </group>
+                        </page>
+                        <page string="Approval / Project" name="approval_project">
+                            <group>
+                                <field name="manager_id"/>
+                                <field name="department_head_name"/>
+                                <field name="department_head_signature"/>
+                                <field name="general_manager_name"/>
+                                <field name="general_manager_signature"/>
+                                <field name="project_id"/>
+                                <field name="approval_request_id" readonly="1"/>
+                                <field name="task_id" readonly="1"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_user_access_form" model="ir.actions.act_window">
+        <field name="name">User Access Form</field>
+        <field name="res_model">it.user.access.form</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_user_access_form"
+              name="User Access Form"
+              parent="hr.menu_hr_root"
+              action="action_user_access_form"
+              groups="base.group_user"
+              sequence="20"/>
+
+    <record id="view_hr_employee_form_inherit_user_access" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.user.access</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_user_access_forms"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-key"
+                        invisible="user_access_form_count == 0">
+                    <field name="user_access_form_count" widget="statinfo" string="User Access"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_approval_request_form_inherit_user_access" model="ir.ui.view">
+        <field name="name">approval.request.form.inherit.user.access</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/field[@name='active']" position="after">
+                <field name="user_access_form_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_user_access_form"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-key"
+                        invisible="user_access_form_count == 0">
+                    <field name="user_access_form_count" widget="statinfo" string="User Access"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="User Access Form" name="user_access_form" invisible="not user_access_form_id">
+                    <group>
+                        <group string="Employee">
+                            <field name="user_access_form_id" readonly="1"/>
+                            <field name="user_access_employee_id" readonly="1"/>
+                            <field name="user_access_project_id" readonly="1"/>
+                            <field name="user_access_task_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="user_access_description" readonly="1" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_task_form_inherit_user_access" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.user.access</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_user_access_form"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-key"
+                        invisible="user_access_form_count == 0">
+                    <field name="user_access_form_count" widget="statinfo" string="User Access"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

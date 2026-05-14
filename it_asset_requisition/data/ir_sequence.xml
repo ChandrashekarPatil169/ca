@@ -1,0 +1,18 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_it_asset_requisition" model="ir.sequence">
+            <field name="name">IT Asset Requisition</field>
+            <field name="code">it.asset.requisition</field>
+            <field name="prefix">REQN/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_it_user_access_form" model="ir.sequence">
+            <field name="name">User Access Form</field>
+            <field name="code">it.user.access.form</field>
+            <field name="prefix">UAF/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

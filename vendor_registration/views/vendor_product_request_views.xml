@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ───────────────────────────────────────────────────────────── -->
+    <!-- Vendor Product Request Form -->
+    <!-- ───────────────────────────────────────────────────────────── -->
+
+    <record id="view_vendor_product_request_form"
+            model="ir.ui.view">
+
+        <field name="name">vendor.product.request.form</field>
+
+        <field name="model">vendor.product.request</field>
+
+        <field name="arch" type="xml">
+
+            <form string="Vendor Product Request">
+
+                <!-- Header -->
+                <header>
+
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="This will create/link the product and add the vendor as a supplier. Continue?"/>
+
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_reset_draft"
+                            string="Reset to Draft"
+                            type="object"
+                            invisible="state == 'draft'"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,approved,merged,rejected"/>
+
+                </header>
+
+                <!-- Body -->
+                <sheet>
+
+                    <!-- Smart Button -->
+                    <div class="oe_button_box"
+                         name="button_box">
+
+                        <button name="action_open_product"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-cube"
+                                invisible="not product_id">
+
+                            <field name="product_count"
+                                   widget="statinfo"
+                                   string="Product"/>
+
+                        </button>
+
+                    </div>
+
+                    <!-- Title -->
+                    <div class="oe_title">
+
+                        <h1>
+
+                            <field name="name"
+                                   placeholder="Product / Service Name"/>
+
+                        </h1>
+
+                    </div>
+
+                    <!-- Main Groups -->
+                    <group>
+
+                        <!-- Vendor -->
+                        <group string="Vendor Info">
+
+                            <field name="vendor_registration_id"/>
+
+                            <field name="partner_id"
+                                   readonly="1"/>
+
+                        </group>
+
+                        <!-- Product -->
+                        <group string="Product Details">
+
+                            <field name="product_type"/>
+
+                            <field name="uom"/>
+
+                            <!-- Official Odoo HSN -->
+                            <field name="l10n_in_hsn_code"
+                                   widget="l10n_in_hsn_autocomplete"/>
+
+                            <field name="brand"/>
+
+                            <field name="model_number"/>
+
+                            <field name="certifications"/>
+
+                        </group>
+
+                    </group>
+
+                    <!-- Pricing + Approval -->
+                    <group>
+
+                        <!-- Pricing -->
+                        <group string="Pricing">
+
+                            <field name="price"/>
+
+                            <field name="currency_id"/>
+
+                            <field name="tax_percent"/>
+
+                            <field name="min_order_qty"/>
+
+                            <field name="lead_time"/>
+
+                        </group>
+
+                        <!-- Approval -->
+                        <group string="Approval">
+
+                            <field name="existing_product_id"
+                                   help="Select an existing product to merge, or leave blank to create a new one."/>
+
+                            <field name="product_id"
+                                   readonly="1"/>
+
+                            <field name="approved_by"
+                                   readonly="1"/>
+
+                            <field name="approved_date"
+                                   readonly="1"/>
+
+                        </group>
+
+                    </group>
+
+                    <!-- Notebook -->
+                    <notebook>
+
+                        <page string="Description">
+
+                            <field name="description"
+                                   placeholder="Product description..."
+                                   nolabel="1"/>
+
+                        </page>
+
+                        <page string="Internal Notes">
+
+                            <field name="internal_notes"
+                                   placeholder="Internal notes (not visible to vendor)..."
+                                   nolabel="1"/>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <!-- Chatter -->
+                <chatter>
+
+                    <field name="message_follower_ids"/>
+
+                    <field name="activity_ids"/>
+
+                    <field name="message_ids"/>
+
+                </chatter>
+
+            </form>
+
+        </field>
+
+    </record>
+
+    <!-- ───────────────────────────────────────────────────────────── -->
+    <!-- List View -->
+    <!-- ───────────────────────────────────────────────────────────── -->
+
+    <record id="view_vendor_product_request_list"
+            model="ir.ui.view">
+
+        <field name="name">vendor.product.request.list</field>
+
+        <field name="model">vendor.product.request</field>
+
+        <field name="arch" type="xml">
+
+            <list decoration-success="state in ('approved','merged')"
+                  decoration-danger="state == 'rejected'"
+                  decoration-info="state == 'draft'">
+
+                <field name="name"/>
+
+                <field name="vendor_registration_id"/>
+
+                <field name="partner_id"/>
+
+                <field name="product_type"/>
+
+                <field name="l10n_in_hsn_code"/>
+
+                <field name="price"/>
+
+                <field name="create_date"
+                       string="Submitted On"/>
+
+                <field name="state"
+                       widget="badge"
+                       decoration-success="state in ('approved','merged')"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state == 'draft'"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <!-- ───────────────────────────────────────────────────────────── -->
+    <!-- Search View -->
+    <!-- ───────────────────────────────────────────────────────────── -->
+
+    <record id="view_vendor_product_request_search"
+            model="ir.ui.view">
+
+        <field name="name">vendor.product.request.search</field>
+
+        <field name="model">vendor.product.request</field>
+
+        <field name="arch" type="xml">
+
+            <search>
+
+                <field name="name"/>
+
+                <field name="vendor_registration_id"/>
+
+                <field name="l10n_in_hsn_code"/>
+
+                <filter string="Requested"
+                        name="draft"
+                        domain="[('state','=','draft')]"/>
+
+                <filter string="Approved"
+                        name="approved"
+                        domain="[('state','=','approved')]"/>
+
+                <filter string="Merged"
+                        name="merged"
+                        domain="[('state','=','merged')]"/>
+
+                <filter string="Rejected"
+                        name="rejected"
+                        domain="[('state','=','rejected')]"/>
+
+                <filter string="Vendor"
+                        name="group_vendor"
+                        context="{'group_by': 'vendor_registration_id'}"/>
+
+                <filter string="Status"
+                        name="group_state"
+                        context="{'group_by': 'state'}"/>
+
+                <filter string="Type"
+                        name="group_type"
+                        context="{'group_by': 'product_type'}"/>
+
+            </search>
+
+        </field>
+
+    </record>
+
+    <!-- ───────────────────────────────────────────────────────────── -->
+    <!-- Action -->
+    <!-- ───────────────────────────────────────────────────────────── -->
+
+    <record id="action_vendor_product_request"
+            model="ir.actions.act_window">
+
+        <field name="name">Vendor Product Requests</field>
+
+        <field name="res_model">vendor.product.request</field>
+
+        <field name="view_mode">list,form</field>
+
+        <field name="help" type="html">
+
+            <p class="o_view_nocontent_smiling_face">
+                No vendor product requests yet.
+            </p>
+
+        </field>
+
+    </record>
+
+    <!-- ───────────────────────────────────────────────────────────── -->
+    <!-- Partner Smart Button -->
+    <!-- ───────────────────────────────────────────────────────────── -->
+
+    <record id="view_partner_form_inherit_products_button"
+            model="ir.ui.view">
+
+        <field name="name">res.partner.form.products.button</field>
+
+        <field name="model">res.partner</field>
+
+        <field name="inherit_id"
+               ref="base.view_partner_form"/>
+
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']"
+                   position="inside">
+
+                <button type="object"
+                        name="action_open_products"
+                        class="oe_stat_button"
+                        icon="fa-cubes">
+
+                    <field name="product_count"
+                           widget="statinfo"
+                           string="Products"/>
+
+                </button>
+
+            </xpath>
+
+        </field>
+
+    </record>
+
+</odoo>

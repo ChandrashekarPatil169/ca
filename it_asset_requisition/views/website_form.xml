@@ -1,0 +1,281 @@
+
+<odoo>
+
+
+    <template id="asset_form" name="IT Asset Request">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty bg-light py-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <t t-if="success">
+                                <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm border-0" role="alert" style="border-left: 5px solid #28a745 !important; border-radius: 0;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-check-circle fa-2x mr-3 text-success"></i>
+                                        <div>
+                                            <h5 class="alert-heading mb-1 font-weight-bold">Requisition Submitted Successfully!</h5>
+                                            <p class="mb-0">Your request has been recorded. Our team will review it shortly. Reference: <field name="name" t-field="request.env['it.asset.requisition'].sudo().search([], limit=1, order='id desc').name"/></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&amp;times;</span>
+                                    </button>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 bg-white shadow rounded p-0 overflow-hidden">
+                            <!-- Header Branding -->
+                            <div class="p-4 border-bottom bg-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12 text-right">
+                                        <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" style="max-height: 80px;" alt="Company Logo"/>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-primary-dark text-white text-center py-2 text-uppercase font-weight-bold" style="background-color: #1a237e; letter-spacing: 1px;">
+                                CAPEX - IT ASSET REQUISITION FORM
+                            </div>
+
+                            <form action="/it-asset/submit" method="post" enctype="multipart/form-data" class="p-4">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                
+                                <!-- Employee Details -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Employee (User) Details</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">First Name :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_first_name" class="form-control form-control-sm" required="1"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Last Name :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_last_name" class="form-control form-control-sm" required="1"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Designation :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_designation" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Department :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_department" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Office / Site :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_office_site" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">EMP Code :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_code" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Location :</label>
+                                                <div class="col-sm-8"><input type="text" name="emp_location" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Date :</label>
+                                                <div class="col-sm-8"><input type="date" name="request_date" class="form-control form-control-sm" t-att-value="datetime.date.today().strftime('%Y-%m-%d')"/></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Manager Details -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Manager Details</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">First Name :</label>
+                                                <div class="col-sm-8"><input type="text" name="manager_first_name" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Last Name :</label>
+                                                <div class="col-sm-8"><input type="text" name="manager_last_name" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Location :</label>
+                                                <div class="col-sm-8"><input type="text" name="manager_location" class="form-control form-control-sm"/></div>
+                                            </div>
+                                            <div class="col-md-6 form-group row no-gutters mb-2">
+                                                <label class="col-sm-4 col-form-label">Date :</label>
+                                                <div class="col-sm-8"><input type="date" name="manager_date" class="form-control form-control-sm"/></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Computer Hardware -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Computer Hardware</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <t t-foreach="hardware_products" t-as="p">
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" t-att-id="'hw_' + str(p.id)" name="hardware_product_id" t-att-value="p.id" class="custom-control-input"/>
+                                                        <label class="custom-control-label" t-att-for="'hw_' + str(p.id)">
+                                                            <t t-esc="p.name"/>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                        <small class="text-primary mt-1 font-italic">(Important: For any desktop / laptop, MS Office SW will need to be procured)</small>
+                                    </div>
+                                </div>
+
+                                <!-- SIM Card -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Sim Card</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <t t-foreach="sim_products" t-as="p">
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" t-att-id="'sim_' + str(p.id)" name="sim_product_id" t-att-value="p.id" class="custom-control-input"/>
+                                                        <label class="custom-control-label" t-att-for="'sim_' + str(p.id)">
+                                                            <t t-esc="p.name"/>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Printer -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Printer</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <t t-foreach="printer_products" t-as="p">
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" t-att-id="'pr_' + str(p.id)" name="printer_product_id" t-att-value="p.id" class="custom-control-input"/>
+                                                        <label class="custom-control-label" t-att-for="'pr_' + str(p.id)">
+                                                            <t t-esc="p.name"/>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Others Section -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Others</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <div class="custom-control custom-checkbox border p-2 rounded mb-2">
+                                                    <input type="checkbox" name="software_checkbox" class="custom-control-input" id="software_checkbox"/>
+                                                    <label class="custom-control-label pl-2" for="software_checkbox">Software (Specify)</label>
+                                                    <input type="text" name="software_specify" class="form-control form-control-sm mt-1" placeholder="Specify software name"/>
+                                                </div>
+                                                <small class="text-muted">(Standard SW like MS Office, Outlook etc will be given by default)</small>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <div class="custom-control custom-checkbox border p-2 rounded mb-2">
+                                                    <input type="checkbox" name="pda_checkbox" class="custom-control-input" id="pda_checkbox"/>
+                                                    <label class="custom-control-label pl-2" for="pda_checkbox">PDA (only for sites with CAFM)</label>
+                                                    <div class="d-flex align-items-center mt-1">
+                                                        <span class="mr-2">Count:</span>
+                                                        <input type="number" name="pda_count" class="form-control form-control-sm" style="width: 80px;"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 form-group no-gutters row mt-2">
+                                                <label class="col-sm-1">Others :</label>
+                                                <div class="col-sm-11"><textarea name="others_text" class="form-control form-control-sm" rows="2"></textarea></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Justification -->
+                                <div class="mb-4">
+                                    <h5 class="section-header">Justification for Request</h5>
+                                    <div class="section-content p-3 border">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input type="radio" id="just1" name="justification_type" value="new_position" class="custom-control-input" required="1"/>
+                                                    <label class="custom-control-label" for="just1">New Position</label>
+                                                </div>
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input type="radio" id="just2" name="justification_type" value="new_site" class="custom-control-input" required="1"/>
+                                                    <label class="custom-control-label" for="just2">New Site</label>
+                                                </div>
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input type="radio" id="just3" name="justification_type" value="replacement" class="custom-control-input" required="1"/>
+                                                    <label class="custom-control-label" for="just3">Replacement</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7 d-flex align-items-center">
+                                                <label class="mr-2 mb-0">Justification :</label>
+                                                <input type="text" name="justification_text" class="form-control form-control-sm"/>
+                                            </div>
+                                            <div class="col-12 mt-1"><small class="text-muted">(Enter the reason for replacement above)</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Manager Remarks Section from bottom of form -->
+                                <div class="mb-4">
+                                    <div class="row no-gutters align-items-end">
+                                        <div class="col-md-9 form-group row no-gutters mb-0">
+                                            <label class="col-sm-4 col-form-label font-weight-bold">Manager's Signature / Remarks :</label>
+                                            <div class="col-sm-8"><input type="text" name="manager_remarks" class="form-control form-control-sm"/></div>
+                                        </div>
+                                        <div class="col-md-3 text-right">
+                                            <div class="custom-control custom-checkbox custom-control-inline">
+                                                <input type="checkbox" name="email_approval" class="custom-control-input" id="email_approval"/>
+                                                <label class="custom-control-label font-weight-bold" for="email_approval">Email Approval</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-5 mb-3">
+                                    <button type="submit" class="btn btn-lg px-5 shadow-sm text-uppercase font-weight-bold" style="background-color: #1a237e; color: white;">Submit Requisition</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                .section-header {
+                    background-color: #1a237e;
+                     color: white !important;
+                    padding: 5px 15px;
+                    display: inline-block;
+                    font-size: 0.9rem;
+                    margin-bottom: 0;
+                    font-weight: bold;
+                    text-transform: capitalize;
+                }
+                .section-content {
+                    border: 1px solid #1a237e !important;
+                }
+                .form-control-sm {
+                    border-radius: 0;
+                    border: 1px solid #333;
+                }
+                .custom-control-label {
+                    font-size: 0.85rem;
+                }
+                .table-bordered td {
+                    border: 1px solid #333 !important;
+                }
+
+            </style>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- =========================
+         PARTNER: DEALER INFO
+    ========================== -->
+    <record id="view_partner_form_dealer" model="ir.ui.view">
+        <field name="name">res.partner.form.dealer</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="inside">
+                <group string="Dealer Info">
+                    <field name="is_dealer"/>
+                    <field name="ref" string="Customer Ref / Account ID"/>
+                    <field name="dealer_code" invisible="not is_dealer"/>
+                    <field name="branch_id"/>
+                    <field name="zone_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_dealer_branch_list" model="ir.ui.view">
+        <field name="name">dealer.branch.list</field>
+        <field name="model">dealer.branch</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dealer_branch_form" model="ir.ui.view">
+        <field name="name">dealer.branch.form</field>
+        <field name="model">dealer.branch</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dealer_branch" model="ir.actions.act_window">
+        <field name="name">Branches</field>
+        <field name="res_model">dealer.branch</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_dealer_zone_list" model="ir.ui.view">
+        <field name="name">dealer.zone.list</field>
+        <field name="model">dealer.zone</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dealer_zone_form" model="ir.ui.view">
+        <field name="name">dealer.zone.form</field>
+        <field name="model">dealer.zone</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dealer_zone" model="ir.actions.act_window">
+        <field name="name">Zones</field>
+        <field name="res_model">dealer.zone</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_dealer_warranty_type_list" model="ir.ui.view">
+        <field name="name">dealer.warranty.type.list</field>
+        <field name="model">dealer.warranty.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dealer_warranty_type_form" model="ir.ui.view">
+        <field name="name">dealer.warranty.type.form</field>
+        <field name="model">dealer.warranty.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dealer_warranty_type" model="ir.actions.act_window">
+        <field name="name">Warranty Types</field>
+        <field name="res_model">dealer.warranty.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_dealer_data_import_wizard_form" model="ir.ui.view">
+        <field name="name">dealer.data.import.wizard.form</field>
+        <field name="model">dealer.data.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Dealer Data">
+                <sheet>
+                    <group>
+                        <field name="csv_file" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_import" type="object" string="Import" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dealer_data_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Dealer Data</field>
+        <field name="res_model">dealer.data.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_dealer_branch"
+              name="Branches"
+              parent="contacts.res_partner_menu_config"
+              action="action_dealer_branch"
+              sequence="90"/>
+
+    <menuitem id="menu_dealer_zone"
+              name="Zones"
+              parent="contacts.res_partner_menu_config"
+              action="action_dealer_zone"
+              sequence="91"/>
+
+    <menuitem id="menu_dealer_warranty_type"
+              name="Warranty Types"
+              parent="contacts.res_partner_menu_config"
+              action="action_dealer_warranty_type"
+              sequence="92"/>
+
+    <menuitem id="menu_dealer_data_import_wizard"
+              name="Import Dealer Data"
+              parent="contacts.res_partner_menu_config"
+              action="action_dealer_data_import_wizard"
+              sequence="93"/>
+
+    <record id="view_product_category_form_dealer_tracking" model="ir.ui.view">
+        <field name="name">product.category.form.dealer.tracking</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='first']" position="inside">
+                <field name="dealer_category_code"/>
+                <field name="dealer_category_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_category_list_dealer_tracking" model="ir.ui.view">
+        <field name="name">product.category.list.dealer.tracking</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_name']" position="after">
+                <field name="dealer_category_code" optional="show"/>
+                <field name="dealer_category_description" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_form_dealer_tracking" model="ir.ui.view">
+        <field name="name">product.template.form.dealer.tracking</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="dealer_category_code"/>
+                <field name="dealer_category_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_list_dealer_tracking" model="ir.ui.view">
+        <field name="name">product.template.list.dealer.tracking</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="dealer_category_code" optional="show"/>
+                <field name="dealer_category_description" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         SALE ORDER: DEALER
+    ========================== -->
+    <record id="view_sale_order_form_dealer" model="ir.ui.view">
+        <field name="name">sale.order.form.dealer</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="inside">
+                <group string="Dealer">
+                    <field name="dealer_id"/>
+                    <field name="dealer_code" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         STOCK LOT: CUSTOMER + DEALER DETAILS (FORM)
+    ========================== -->
+    <record id="view_stock_lot_form_customer_details" model="ir.ui.view">
+        <field name="name">stock.lot.form.customer.details.simple</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <field name="active" invisible="1"/>
+            </xpath>
+            <xpath expr="//group[@name='description']" position="before">
+                <group string="Customer Details">
+                    <field name="customer_id"/>
+                    <field name="customer_city"/>
+                    <field name="customer_state_id"/>
+                    <field name="customer_zip"/>
+                    <field name="customer_branch_id"/>
+                    <field name="customer_zone_id"/>
+                </group>
+                <group string="Product Details">
+                    <field name="product_code"/>
+                    <field name="product_description"/>
+                    <field name="product_category_id"/>
+                    <field name="product_category_code"/>
+                    <field name="product_category_description"/>
+                </group>
+                <group string="Dealer Details">
+                    <field name="dealer_id"/>
+                    <field name="dealer_code"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         STOCK LOT: LIST VIEW
+    ========================== -->
+    <record id="view_stock_lot_list_customer_dealer" model="ir.ui.view">
+        <field name="name">stock.lot.list.customer.dealer</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="active" column_invisible="True"/>
+                <field name="customer_id" optional="show"/>
+                <field name="customer_city" optional="hide"/>
+                <field name="customer_state_id" optional="hide"/>
+                <field name="customer_zip" optional="hide"/>
+                <field name="product_code" optional="show"/>
+                <field name="product_description" optional="hide"/>
+                <field name="product_category_id" optional="show"/>
+                <field name="product_category_code" optional="show"/>
+                <field name="product_category_description" optional="hide"/>
+                <field name="dealer_id" optional="show"/>
+                <field name="dealer_code" optional="show"/>
+                <field name="warranty_type_id" optional="show"/>
+                <field name="warranty_description" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         PARTNER: SERIAL BUTTON
+    ========================== -->
+    <record id="view_partner_form_serial_button" model="ir.ui.view">
+        <field name="name">res.partner.form.serial.button</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_serials"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-barcode">
+                    <field name="serial_count"
+                           widget="statinfo"
+                           string="My Stocks"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         STOCK LOT: WARRANTY
+    ========================== -->
+    <record id="view_stock_lot_form_warranty" model="ir.ui.view">
+        <field name="name">stock.lot.form.warranty</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='description']" position="before">
+                <group string="Warranty Information">
+                    <field name="warranty_type_id"/>
+                    <field name="warranty_description"/>
+                    <field name="warranty_start_date"/>
+                    <field name="warranty_duration"/>
+                    <field name="warranty_end_date" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         HELPDESK: SERIAL + WARRANTY
+    ========================== -->
+    <record id="view_helpdesk_ticket_form_serial" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.serial</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="lot_id"/>
+                <field name="warranty_status" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- =========================
+         WEBSITE: CUSTOM HELPDESK FORM
+         Standalone QWeb template rendered by our controller.
+         Adds Dealer (domain: is_dealer=True) and Product Serial Number
+         (domain: lot_domain filtered by dealer/customer) — same as backend.
+         Full Name is auto-populated from the selected serial's customer.
+    ========================== -->
+    <template id="website_helpdesk_form_custom" name="Submit a Ticket">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-4 mb-5">
+                <h1 class="mb-4">Submit a Ticket</h1>
+
+                <form action="/dealer_tracking/submit_ticket" method="POST"
+                      enctype="multipart/form-data">
+
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <!-- Full Name — locked to the logged-in user's partner.
+                         Mirrors backend Customer (partner_id) field scoped to self.
+                         Read-only: a logged-in user can only see/submit as themselves. -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="partner_name">Full Name <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control bg-light" id="partner_name"
+                                   name="partner_name" readonly="1"
+                                   t-att-value="partner.name"/>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="partner_phone">Phone Number</label>
+                        <div class="col-sm-9">
+                            <input type="tel" class="form-control" id="partner_phone"
+                                   name="partner_phone"
+                                   t-att-value="partner.phone or ''"/>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="partner_email">Email Address <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control" id="partner_email"
+                                   name="partner_email" required="1"
+                                   t-att-value="partner.email or ''"/>
+                        </div>
+                    </div>
+
+                    <!-- Company -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="company_name">Company Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="company_name" name="company_name"/>
+                        </div>
+                    </div>
+
+                    <!-- ===== DEALER (domain: is_dealer=True) ===== -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="dealer_id">Dealer</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="dealer_id" name="dealer_id">
+                                <option value="">Enter Dealer</option>
+                                <t t-foreach="dealers" t-as="d">
+                                    <option t-att-value="d.id" t-esc="d.name"/>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ===== PRODUCT SERIAL NUMBER (domain: lot_domain) ===== -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="lot_id">Product Serial Number</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="lot_id" name="lot_id">
+                                <option value="">Enter Serial</option>
+                                <t t-foreach="lots" t-as="l">
+                                    <option t-att-value="l.id" t-esc="l.name"/>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="subject">Message Subject <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="subject" name="subject" required="1"/>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="description">Ask Your Question <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="description" name="description"
+                                      rows="5" required="1"/>
+                        </div>
+                    </div>
+
+                    <!-- Attachment -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="attachment">Attachment</label>
+                        <div class="col-sm-9">
+                            <input type="file" class="form-control" id="attachment" name="attachment"/>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary px-4">Submit Ticket</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </t>
+    </template>
+
+</odoo>

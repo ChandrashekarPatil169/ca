@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_product_requisition_bulk_upload" model="ir.ui.view">
+        <field name="name">res.partner.product.requisition.bulk.upload</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Product Requisition Portal" groups="sales_team.group_sale_salesman">
+                    <group>
+                        <field name="allow_product_requisition_bulk_upload"
+                               string="Allow Bulk Requisition Upload on Portal"
+                               widget="boolean_toggle"
+                               help="Uncheck to hide the Bulk Upload section from this customer's requisition portal page."/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

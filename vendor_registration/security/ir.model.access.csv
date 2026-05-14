@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vendor_registration_manager,vendor.registration.manager,model_vendor_registration,group_vendor_registration_manager,1,1,1,1
+access_vendor_registration_user,vendor.registration.user,model_vendor_registration,base.group_user,1,0,0,0
+access_vendor_product_request_manager,vendor.product.request.manager,model_vendor_product_request,group_vendor_registration_manager,1,1,1,1
+access_vendor_product_request_user,vendor.product.request.user,model_vendor_product_request,base.group_user,1,1,1,0

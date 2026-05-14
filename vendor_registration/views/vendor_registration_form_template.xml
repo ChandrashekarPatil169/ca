@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="vendor_registration_form" name="Vendor Registration Form">
+    <t t-call="website.layout">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+
+                    <!-- Success Message -->
+                    <t t-if="success">
+                        <div class="alert alert-success text-center py-5">
+                            <i class="fa fa-check-circle fa-3x text-success mb-3 d-block"/>
+                            <h3>Registration Request Submitted Successfully!</h3>
+                            <p class="mb-0">Thank you for registering. We have received your request.<br/>
+                            Once reviewed and approved, you will receive an email with your portal login credentials.</p>
+                        </div>
+                    </t>
+
+                    <t t-if="not success">
+                        <h2 class="mb-1 fw-bold">Vendor Registration</h2>
+                        <p class="text-muted mb-4">Fill in your details below. Fields marked <span class="text-danger">*</span> are required.</p>
+
+                        <t t-if="error">
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fa fa-exclamation-triangle me-2"/>
+                                <t t-esc="error"/>
+                            </div>
+                        </t>
+
+                        <form action="/vendor-registration/submit" method="post"
+                              class="needs-validation o_vendor_registration_form" novalidate="1">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <button type="button"
+                                    class="o_vendor_chatbot_launcher"
+                                    title="Open vendor registration assistant"
+                                    aria-label="Open vendor registration assistant">
+                                <i class="fa fa-comments-o"/>
+                            </button>
+                            <div class="o_vendor_chatbot" aria-live="polite">
+                                <div class="o_vendor_chatbot_header">
+                                    <span class="d-flex align-items-center gap-2">
+                                        <i class="fa fa-comments-o"/>
+                                        <span>Vendor Assistant</span>
+                                    </span>
+                                    <button type="button"
+                                            class="o_vendor_chatbot_close"
+                                            title="Minimize"
+                                            aria-label="Minimize vendor registration assistant">
+                                        <i class="fa fa-times"/>
+                                    </button>
+                                </div>
+                                <div class="o_vendor_chatbot_messages"/>
+                                <div class="o_vendor_chatbot_entry">
+                                    <input type="text"
+                                           class="form-control o_vendor_chatbot_input"
+                                           autocomplete="off"/>
+                                    <button type="button" class="btn btn-primary o_vendor_chatbot_send">
+                                        <i class="fa fa-paper-plane"/>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ── Section 1: Basic Info ─────────────────── -->
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header bg-primary text-white fw-semibold">
+                                    <i class="fa fa-building me-2"/>Company / Contact Information
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Company / Vendor Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" class="form-control"
+                                                   t-att-value="form_values.get('name','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Contact Person Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="contact_name" class="form-control"
+                                                   t-att-value="form_values.get('contact_name','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                            <input type="email" name="email" class="form-control"
+                                                   t-att-value="form_values.get('email','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+                                            <input type="tel" name="phone" class="form-control"
+                                                   t-att-value="form_values.get('phone','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Mobile</label>
+                                            <input type="tel" name="mobile" class="form-control"
+                                                   t-att-value="form_values.get('mobile','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Website</label>
+                                            <input type="url" name="website" class="form-control"
+                                                   placeholder="https://" t-att-value="form_values.get('website','')"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section 2: Business Details ──────────── -->
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header bg-primary text-white fw-semibold">
+                                    <i class="fa fa-briefcase me-2"/>Business Details
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Business Type <span class="text-danger">*</span></label>
+                                            <select name="company_type" class="form-select" required="1">
+                                                <option value="individual" t-att-selected="form_values.get('company_type') == 'individual'">Individual / Proprietorship</option>
+                                                <option value="partnership" t-att-selected="form_values.get('company_type') == 'partnership'">Partnership</option>
+                                                <option value="llp" t-att-selected="form_values.get('company_type') == 'llp'">LLP</option>
+                                                <option value="private_ltd" t-att-selected="form_values.get('company_type') == 'private_ltd'">Private Limited</option>
+                                                <option value="public_ltd" t-att-selected="form_values.get('company_type') == 'public_ltd'">Public Limited</option>
+                                                <option value="other" t-att-selected="form_values.get('company_type') == 'other'">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">GST Number</label>
+                                            <input type="text" name="gst_number" class="form-control text-uppercase"
+                                                   maxlength="15" placeholder="15-digit GST number"
+                                                   t-att-value="form_values.get('gst_number','')"/>
+                                            <div class="form-text">Leave blank if not registered under GST.</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">GST Treatment</label>
+                                            <select name="l10n_in_gst_treatment" class="form-select">
+                                                <option value="regular" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'regular'">Registered Business - Regular</option>
+                                                <option value="composition" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'composition'">Registered Business - Composition</option>
+                                                <option value="unregistered" t-att-selected="form_values.get('l10n_in_gst_treatment', 'unregistered') == 'unregistered'">Unregistered Business</option>
+                                                <option value="consumer" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'consumer'">Consumer</option>
+                                                <option value="overseas" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'overseas'">Overseas</option>
+                                                <option value="special_economic_zone" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'special_economic_zone'">Special Economic Zone</option>
+                                                <option value="deemed_export" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'deemed_export'">Deemed Export</option>
+                                                <option value="uin_holders" t-att-selected="form_values.get('l10n_in_gst_treatment') == 'uin_holders'">UIN Holders</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">PAN Number</label>
+                                            <input type="text" name="pan_number" class="form-control text-uppercase"
+                                                   maxlength="10" placeholder="10-character PAN"
+                                                   t-att-value="form_values.get('pan_number','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">CIN Number</label>
+                                            <input type="text" name="cin_number" class="form-control text-uppercase"
+                                                   t-att-value="form_values.get('cin_number','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">MSME / Udyam Registration No.</label>
+                                            <input type="text" name="msme_number" class="form-control"
+                                                   t-att-value="form_values.get('msme_number','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Years in Business</label>
+                                            <input type="number" name="years_in_business" class="form-control" min="0"
+                                                   t-att-value="form_values.get('years_in_business', 0)"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Annual Turnover</label>
+                                            <select name="annual_turnover" class="form-select">
+                                                <option value="">-- Select --</option>
+                                                <option value="below_10l">Below ₹10 Lakhs</option>
+                                                <option value="10l_50l">₹10 – 50 Lakhs</option>
+                                                <option value="50l_1cr">₹50 Lakhs – 1 Crore</option>
+                                                <option value="1cr_10cr">₹1 – 10 Crores</option>
+                                                <option value="above_10cr">Above ₹10 Crores</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section 3: Address ────────────────────── -->
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header bg-primary text-white fw-semibold">
+                                    <i class="fa fa-map-marker me-2"/>Address
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label">Street / Address Line 1 <span class="text-danger">*</span></label>
+                                            <input type="text" name="street" class="form-control"
+                                                   t-att-value="form_values.get('street','')" required="1"/>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Address Line 2 <span class="text-danger">*</span></label>
+                                            <input type="text" name="street2" class="form-control"
+                                                   t-att-value="form_values.get('street2','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">City <span class="text-danger">*</span></label>
+                                            <input type="text" name="city" class="form-control"
+                                                   t-att-value="form_values.get('city','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">PIN Code <span class="text-danger">*</span></label>
+                                            <input type="text" name="zip" class="form-control"
+                                                   t-att-value="form_values.get('zip','')" required="1"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Country <span class="text-danger">*</span></label>
+                                            <select name="country_id" class="form-select" id="country_id" required="1">
+                                                <option value="">-- Select Country --</option>
+                                                <t t-foreach="countries" t-as="country">
+                                                    <option t-att-value="country.id"
+                                                            t-att-selected="form_values.get('country_id') == country.id">
+                                                        <t t-esc="country.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">State <span class="text-danger">*</span></label>
+                                            <select name="state_id" class="form-select" id="state_id" required="1">
+                                                <option value="">-- Select State --</option>
+                                                <t t-foreach="states" t-as="state">
+                                                    <option t-att-value="state.id"
+                                                            t-att-data-country-id="state.country_id.id"
+                                                            t-att-selected="form_values.get('state_id') == state.id">
+                                                        <t t-esc="state.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section 4: Bank Details ───────────────── -->
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header bg-primary text-white fw-semibold">
+                                    <i class="fa fa-university me-2"/>Bank Details
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Bank Name</label>
+                                            <input type="text" name="bank_name" class="form-control"
+                                                   t-att-value="form_values.get('bank_name','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Number</label>
+                                            <input type="text" name="bank_account_number" class="form-control"
+                                                   t-att-value="form_values.get('bank_account_number','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">IFSC Code</label>
+                                            <input type="text" name="bank_ifsc" class="form-control text-uppercase"
+                                                   t-att-value="form_values.get('bank_ifsc','')"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Branch Name</label>
+                                            <input type="text" name="bank_branch" class="form-control"
+                                                   t-att-value="form_values.get('bank_branch','')"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Section 5: Notes ──────────────────────── -->
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header bg-secondary text-white fw-semibold">
+                                    <i class="fa fa-sticky-note me-2"/>Additional Notes
+                                </div>
+                                <div class="card-body">
+                                    <textarea name="notes" class="form-control" rows="3"
+                                              placeholder="Any additional information you'd like to share..."><t t-esc="form_values.get('notes','')"/></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-paper-plane me-2"/>Submit Registration Request
+                                </button>
+                            </div>
+                        </form>
+                    </t>
+
+                </div>
+            </div>
+        </div>
+    </t>
+</template>
+
+<!-- Vendor not approved placeholder -->
+<template id="vendor_not_approved" name="Vendor Not Approved">
+    <t t-call="website.layout">
+        <div class="container py-5 text-center">
+            <i class="fa fa-lock fa-4x text-warning mb-4 d-block"/>
+            <h3>Access Restricted</h3>
+            <p class="text-muted">Your vendor registration is either pending or not approved yet.<br/>
+            Once approved, you will be able to register your products and services here.</p>
+            <a href="/" class="btn btn-outline-primary mt-3">Return to Home</a>
+        </div>
+    </t>
+</template>
+
+</odoo>

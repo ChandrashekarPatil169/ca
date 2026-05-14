@@ -1,0 +1,204 @@
+<odoo>
+
+    <!-- ======================================================= -->
+    <!-- SMART BUTTONS (RFQ + Approval counters)                  -->
+    <!-- ======================================================= -->
+    <record id="view_it_asset_form_inherit_smart" model="ir.ui.view">
+        <field name="name">it.asset.requisition.form.inherit.smart.top</field>
+        <field name="model">it.asset.requisition</field>
+        <field name="inherit_id" ref="it_asset_requisition.view_it_asset_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet/div[@class='oe_title']" position="after">
+                <div class="oe_button_box" name="button_box">
+
+                    <!-- RFQ BUTTON -->
+                    <button type="object"
+                            name="action_open_rfq"
+                            class="oe_stat_button"
+                            icon="fa-shopping-cart"
+                            groups="it_asset_requisition.group_it_purchase_manager,base.group_system"
+                            invisible="rfq_count == 0">
+                        <field name="rfq_count" widget="statinfo" string="RFQ"/>
+                    </button>
+
+                    <!-- APPROVAL BUTTON -->
+                    <button type="object"
+                            name="action_open_approval"
+                            class="oe_stat_button"
+                            icon="fa-check"
+                            groups="it_asset_requisition.group_it_purchase_manager,base.group_system"
+                            invisible="approval_count == 0">
+                        <field name="approval_count" widget="statinfo" string="Approval"/>
+                    </button>
+
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- ======================================================= -->
+    <!-- REQUEST APPROVAL BUTTON                                 -->
+    <!-- ======================================================= -->
+    <record id="view_it_asset_form_inherit_button" model="ir.ui.view">
+        <field name="name">it.asset.requisition.form.inherit.button</field>
+        <field name="model">it.asset.requisition</field>
+        <field name="inherit_id" ref="it_asset_requisition.view_it_asset_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_request_approval"
+                        type="object"
+                        string="Request Approval"
+                        class="btn-primary"
+                        groups="it_asset_requisition.group_it_purchase_manager,base.group_system"
+                        invisible="state != 'draft'"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ======================================================= -->
+    <!-- EMPLOYEE + MANAGER Many2one fields + hide old text fields -->
+    <!-- ======================================================= -->
+    <record id="view_it_asset_form_final_override" model="ir.ui.view">
+        <field name="name">it.asset.requisition.form.final.override</field>
+        <field name="model">it.asset.requisition</field>
+        <field name="inherit_id" ref="it_asset_requisition.view_it_asset_form"/>
+        <field name="priority" eval="999"/>
+        <field name="arch" type="xml">
+
+            <!-- Employee Many2one on top -->
+            <xpath expr="//field[@name='emp_designation']" position="before">
+                <field name="employee_id"/>
+            </xpath>
+
+            <!-- Manager Many2one on top -->
+            <xpath expr="//field[@name='manager_location']" position="before">
+                <field name="manager_id"/>
+            </xpath>
+
+            <!-- Hide raw text name fields (populated automatically) -->
+            <xpath expr="//field[@name='emp_first_name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='emp_last_name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='manager_first_name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='manager_last_name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- ======================================================= -->
+    <!-- HR EMPLOYEE: add EMP Code field                          -->
+    <!-- ======================================================= -->
+    <record id="view_hr_employee_form_inherit_emp_code" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.emp.code</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="emp_code"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- ======================================================= -->
+    <!-- PRODUCT TEMPLATE: add Asset Category field               -->
+    <!-- ======================================================= -->
+    <record id="product_template_form_inherit_asset_category" model="ir.ui.view">
+        <field name="name">product.template.form.asset.category</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="asset_category"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- ======================================================= -->
+    <!-- APPROVAL REQUEST: add Requisition tabs for approvers     -->
+    <!-- ======================================================= -->
+    <record id="view_approval_request_inherit_requisition_tabs" model="ir.ui.view">
+        <field name="name">approval.request.form.inherit.requisition.tabs</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Inject Requisition detail tabs after the existing Description/Approvers tabs -->
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Requested Assets" name="req_assets"
+                      invisible="not it_requisition_id">
+                    <group>
+                        <group string="Employee Details">
+                            <field name="req_employee_id" readonly="1"/>
+                            <field name="req_designation" readonly="1"/>
+                            <field name="req_department" readonly="1"/>
+                            <field name="req_manager_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Computer Hardware">
+                            <field name="req_hardware" readonly="1"/>
+                        </group>
+                        <group string="SIM Card">
+                            <field name="req_sim" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Printer">
+                            <field name="req_printer" readonly="1"/>
+                        </group>
+                        <group string="Others">
+                            <field name="req_software_checkbox" readonly="1"/>
+                            <field name="req_software_specify" readonly="1"
+                                   invisible="not req_software_checkbox"/>
+                            <field name="req_pda_checkbox" readonly="1"/>
+                            <field name="req_pda_count" readonly="1"
+                                   invisible="not req_pda_checkbox"/>
+                            <field name="req_others_text" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+
+                <page string="Justification" name="req_justification"
+                      invisible="not it_requisition_id">
+                    <group>
+                        <field name="req_justification_type" readonly="1"/>
+                        <field name="req_justification_text" readonly="1"/>
+                    </group>
+                </page>
+
+                <page string="IS&amp;T Section" name="req_ist"
+                      invisible="not it_requisition_id">
+                    <group>
+                        <field name="req_ist_remark" readonly="1" nolabel="1"/>
+                    </group>
+                </page>
+
+                <page string="Manager Remarks" name="req_manager_remarks"
+                      invisible="not it_requisition_id">
+                    <group>
+                        <field name="req_manager_remarks" readonly="1" nolabel="1"/>
+                    </group>
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

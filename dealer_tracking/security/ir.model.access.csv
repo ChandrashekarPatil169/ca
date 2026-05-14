@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_dealer_branch_user,dealer.branch.user,model_dealer_branch,base.group_user,1,1,1,1
+access_dealer_zone_user,dealer.zone.user,model_dealer_zone,base.group_user,1,1,1,1
+access_dealer_warranty_type_user,dealer.warranty.type.user,model_dealer_warranty_type,base.group_user,1,1,1,1
+access_dealer_data_import_wizard_user,dealer.data.import.wizard.user,model_dealer_data_import_wizard,base.group_user,1,1,1,1

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="dgz_crm_lead_inherited" model="ir.ui.view">
+        <field name="name">dgz.crm.lead.inherited</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!--
+                In Odoo 17-19 the CRM form notebook uses page names.
+                We insert the Order Lines page before the Internal Notes page,
+                matching the original module's intent.
+            -->
+            <xpath expr="//notebook/page[@name='internal_notes']" position="before">
+                <page name="order_lines" string="Order Lines">
+                    <field name="order_line_ids">
+                        <!--
+                            Odoo 17+ replaced the `tree` tag with `list` for
+                            list (formerly tree) views embedded in form views.
+                        -->
+                        <list editable="bottom">
+                            <field name="product_id" required="1" domain="[('state', '=', 'approved')]"/>
+                            <field name="name"/>
+                            <field name="product_uom_qty"/>
+                            <field name="price_unit"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="price_subtotal" widget="monetary"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="crm_currency_id" invisible="1"/>
+                        <div class="oe_inline o_td_label">
+                            <label for="total"/>
+                        </div>
+                        <field
+                            name="total"
+                            nolabel="1"
+                            widget="monetary"
+                            options="{'currency_field': 'crm_currency_id'}"
+                            style="font-size: 1.3em; font-weight: bold; white-space: nowrap;"
+                        />
+                    </group>
+                    <div class="clearfix"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,40 @@
+<odoo>
+    <record id="purchase_order_form_inherit_it_asset" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.it.asset</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="IT Asset Requisition" name="it_asset_requisition" invisible="not it_asset_requisition_id">
+                    <group>
+                        <group string="Source Requisition">
+                            <field name="it_asset_requisition_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="EMPLOYEE DETAILS">
+                            <field name="emp_first_name" readonly="1"/>
+                            <field name="emp_last_name" readonly="1"/>
+                            <field name="emp_department" readonly="1"/>
+                            <field name="emp_location" readonly="1"/>
+                        </group>
+                        <group string="MANAGER DETAILS">
+                            <field name="manager_first_name" readonly="1"/>
+                            <field name="manager_last_name" readonly="1"/>
+                            <field name="manager_remarks" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="JUSTIFICATION">
+                            <field name="justification_type" readonly="1"/>
+                            <field name="justification_text" readonly="1"/>
+                        </group>
+                        <group string="ADDITIONAL REQUIREMENTS">
+                            <field name="others_text" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
